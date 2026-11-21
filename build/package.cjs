@@ -83,18 +83,45 @@ async function verifiedDownload(source, staging) {
   return destination;
 }
 
+async function extractWindowsNode(source, archive, runtime) {
+  const { openPromise } = require('yauzl');
+  const outputs = new Map([
+    [source.executableMember, { name: 'node.exe', limit: 160 * 1024 * 1024 }],
+    [source.licenseMember, { name: 'LICENSE', limit: 1024 * 1024 }]
+  ]);
+  const zip = await openPromise(archive, { strictFileNames: true });
+  try {
+    for await (const entry of zip.eachEntry()) {
+      const output = outputs.get(entry.fileName);
+      if (!output) continue;
+      const type = (entry.externalFileAttributes >>> 16) & 0o170000;
+      if ((type && type !== 0o100000) || entry.uncompressedSize < 1 || entry.uncompressedSize > output.limit) {
+        throw new Error(`Unexpected Node archive member: ${output.name}`);
+      }
+      await pipeline(await zip.openReadStreamPromise(entry),
+        createWriteStream(path.join(runtime, output.name), { flags: 'wx', mode: 0o600 }));
+    }
+    await Promise.all([...outputs.values()].map(output => fs.access(path.join(runtime, output.name))));
+  } finally { zip.close(); }
+}
+
 async function stageNode(source, archive, staging, platform) {
   const extraction = path.join(staging, 'node-extracted');
   const runtime = path.join(staging, 'bridge-runtime');
-  await Promise.all([fs.mkdir(extraction), fs.mkdir(runtime)]);
-  // Select only these two fixed members from the SHA-256-verified archive.
+  await fs.mkdir(runtime);
+  // The Windows archive is a ZIP. Copy only the two known members.
+  if (platform === 'win32') {
+    await extractWindowsNode(source, archive, runtime);
+    return runtime;
+  }
+  await fs.mkdir(extraction);
   execFileSync('tar', ['-xf', archive, '-C', extraction, source.executableMember, source.licenseMember], { stdio: 'inherit' });
-  const executable = path.join(runtime, platform === 'win32' ? 'node.exe' : 'node');
+  const executable = path.join(runtime, 'node');
   await Promise.all([
     fs.copyFile(path.join(extraction, source.executableMember), executable),
     fs.copyFile(path.join(extraction, source.licenseMember), path.join(runtime, 'LICENSE'))
   ]);
-  if (platform !== 'win32') await fs.chmod(executable, 0o755);
+  await fs.chmod(executable, 0o755);
   return runtime;
 }
 

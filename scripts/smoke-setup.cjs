@@ -3,10 +3,10 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const smokeRoot = path.resolve(__dirname, '../runtime-smoke');
 
 if (!process.versions.electron) {
   const { spawn } = require('node:child_process');
-  const smokeRoot = path.resolve(__dirname, '../runtime-smoke');
   fs.mkdirSync(smokeRoot, { recursive: true, mode: 0o700 });
   const root = fs.realpathSync.native(smokeRoot);
   const fixture = fs.mkdtempSync(path.join(root, 'setup-'));
@@ -21,7 +21,7 @@ if (!process.versions.electron) {
   fs.writeFileSync(path.join(home, '.cursor/mcp.json'), '{"mcpServers":{"fixture":{"command":"fixture-tool"}}}\n');
   const env = { ...process.env, HOME: home, USERPROFILE: home, APPDATA: appData, LOCALAPPDATA: localAppData,
     XDG_CONFIG_HOME: path.join(home, '.config'), CODEX_HOME: path.join(home, '.codex'), npm_node_execpath: process.execPath,
-    MADCAT_HOME: state, MADCAT_SETUP_SMOKE_HOME: home };
+    MADCAT_HOME: state, MADCAT_SETUP_FIXTURE: path.basename(fixture) };
   delete env.ELECTRON_RUN_AS_NODE;
   const child = spawn(require('electron'), [__filename], { env, windowsHide: true, stdio: 'inherit' });
   const timer = setTimeout(() => child.kill(), 25000);
@@ -36,10 +36,17 @@ if (!process.versions.electron) {
 } else {
   const { app, BrowserWindow } = require('electron');
   const { setTimeout: pause } = require('node:timers/promises');
+  const name = process.env.MADCAT_SETUP_FIXTURE;
+  assert.match(name || '', /^setup-[0-9a-zA-Z]{6}$/);
+  const fixture = path.join(fs.realpathSync.native(smokeRoot), name);
+  assert.ok(fs.lstatSync(fixture).isDirectory());
+  const home = path.join(fixture, 'home');
+  const state = path.join(fixture, 'state');
+  for (const directory of [home, state]) assert.ok(fs.lstatSync(directory).isDirectory());
+  assert.equal(process.env.HOME, home);
+  assert.equal(process.env.USERPROFILE, home);
+  assert.equal(process.env.MADCAT_HOME, state);
   const { setupWindowController } = require('../app/integration-window.cjs');
-  const state = process.env.MADCAT_HOME;
-  const home = process.env.MADCAT_SETUP_SMOKE_HOME;
-  assert.ok(state && home);
   app.setPath('userData', state);
   app.disableHardwareAcceleration();
   app.on('window-all-closed', () => {});
