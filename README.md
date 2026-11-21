@@ -19,9 +19,11 @@ Windows also includes `install.ps1`; macOS/Linux include `install.sh`. In Window
 
 **On a Mac:** follow the [macOS installation guide](docs/MACOS.md) for Apple silicon/Intel requirements, `sh ./install.sh`, standalone controls, and optional connections to the same local agents. No Docker or MCP client is needed to run the pet.
 
-Click the stationary mech to make it look toward your pointer for up to 10 seconds. It faces forward again when the timer expires. Drag the visible mech to move it, double-click to salute, or use the tray/right-click menu. Enable **Follow cursor** to make it chase. Transparent space passes pointer clicks through. The menu includes reduced motion, context bubbles, scale, reset, and quit. `Ctrl+Alt+M` / `Cmd+Alt+M` shows or hides it.
+Right-click the mech or open its tray menu and choose **Mouse tracking → 10 seconds after click**. A primary click on the visible mech or the end of a drag starts the window. Its feet stay planted and point forward while the torso aims at the pointer. It faces forward again when the window expires and continues responding to connected apps. Keep **Click through** off to activate the timer by clicking. **Always** keeps tracking active and **Off** disables automatic looking and chasing. The mode is saved and each launch starts a new session.
 
-For tracking only after you interact with it, open the tray or right-click menu and choose **Mouse tracking → 10 seconds after click**. Each primary click on the visible mech, or the end of a drag, starts a fresh 10-second window for looking toward the pointer and optional **Follow cursor** movement. It returns to its normal idle animation when the window ends. **Always** keeps the original behavior; **Off** disables automatic looking and chasing. Turn **Click through** off in the tray before trying to activate it by clicking. The chosen mode is saved, while the temporary tracking window resets when the app restarts.
+Enable **Follow cursor** to let it travel while tracking. It walks with an alternating, avian gait to either side, fires jump jets as it climbs, and lowers into a staggered crouch as it moves down. Reactions take priority over automatic travel. Drag to reposition it and double-click to salute. The menu also includes reduced motion, context bubbles, scale, reset, and quit. `Ctrl+Alt+M` / `Cmd+Alt+M` shows or hides it.
+
+[Preview the gait, torso turns, jump jets, and crouch](docs/motion-demo.gif).
 
 ## Connect your chat agent
 
@@ -84,7 +86,7 @@ Windows, macOS, and Linux are desktop targets. Native Wayland restricts the glob
 
 Grok Bot's cloud desktop and the hosted xAI API cannot directly reach a user's local stdio process. The integration guide describes the supported local Grok Build route and the additional authenticated bridge needed for hosted environments. The overlay can remain visible alongside any local application even without an agent connection.
 
-The sprite sheet also uses the ChatGPT Pets v2 format: 1536×2288, 192×208 cells, nine standard animations and sixteen look directions. Native ChatGPT Pets uses that artwork. Weapon effects, weighted event handling, and text bubbles run in this separate desktop companion.
+The core desktop sprite sheet uses the ChatGPT Pets v2 format: 1536×2288, 192×208 cells, nine standard animations and sixteen look directions. The desktop companion also uses separate atlases for movement, thrust, and weapon effects.
 
 ## Local control and privacy
 

@@ -237,7 +237,7 @@ else {
       if (motionMode) cell = travelVisual(motionMode,now-motionStarted,{mobilityAvailable:optionalAssets.mobility,thrustAvailable:optionalAssets.thrust,reducedMotion:preferences.reducedMotion});
       if (!manual && !moving && currentState === 'idle' && pointerBehavior.gaze && cursor) {
         const direction = directionForOffset(cursor.x-(x+(LAYOUT.petX+96)*preferences.scale),cursor.y-(y+(LAYOUT.petY+208*.46)*preferences.scale),60*preferences.scale);
-        if (direction !== null) cell = lookCell(direction);
+        if (direction !== null) cell = { ...cell, ...lookCell(direction) };
       }
       if (cursor) {
         const alpha=alphaAtCursor(cursor,x,y,cell);

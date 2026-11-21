@@ -29,9 +29,11 @@ npm start
 
 The installer runs `npm ci`, the non-GUI tests, and the artwork check. Dependencies stay inside the extracted bundle. Keep the first Terminal running while using the companion; use a second Terminal in the same folder for the commands below. This distribution is a source kit, not a signed/notarized `.app` or `.dmg` installer.
 
-Use the menu-bar icon or right-click the visible mech for its menu. Drag the mech to reposition it; double-click to salute. **Follow cursor** enables chasing. **Cmd+Option+M** shows or hides the overlay.
+Use the menu-bar icon or right-click the visible mech for its menu. Drag the mech to reposition it. Double-click to salute. **Cmd+Option+M** shows or hides the overlay.
 
 Choose **Mouse tracking → 10 seconds after click** for tracking only after interaction. A primary click on the visible mech or the end of a drag starts a fresh 10-second window for gaze and optional chasing, then returns to idle. **Always** tracks continuously; **Off** disables automatic gaze/chasing. Keep **Click through** off to activate the timed mode by clicking. The mode is saved; the timed window resets at restart. Reduced motion, context bubbles, size, reset position, and quit are also available in the menu.
+
+Enable **Follow cursor** for travel during that window. The mech uses its avian gait for sideways movement, jump jets to climb, and a staggered crouch while moving down. It plants both feet and turns its torso when it tracks the pointer in place.
 
 ## Local controls and reaction demos
 
