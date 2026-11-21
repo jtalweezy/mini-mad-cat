@@ -13,6 +13,7 @@ const { DEFAULT_TRACKING_MODE, TRACKING_MODES, TRACKING_WINDOW_MS, createTrackin
 const { CAPTURE_TIMES, captureRequest, captureTarget, writeCapture } = require('../lib/capture-output.cjs');
 const { mobility, classifyMotion, canChase, travelVisual } = require('../lib/mobility.cjs');
 const { HIT_ALPHA, spritePoint, isSpritePoint, anchorInWindow, opaqueBounds, nearOpaqueBounds } = require('../lib/pointer.cjs');
+const { setupWindowController } = require('./integration-window.cjs');
 const reactionPolicy = require('../config/reactions.json');
 const reactionController = createReactionController(reactionPolicy);
 const LAYOUT = { width: 512, height: 400, petX: 160, petY: 180, petWidth: 192, petHeight: 208 };
@@ -26,6 +27,7 @@ app.setPath('userData', dataDir);
 if (!app.requestSingleInstanceLock()) { app.quit(); }
 else {
   let window, tray, control, interval, saveTimer;
+  let integrations, setupRequested = process.argv.includes('--setup');
   let preferences = { scale: 1, followCursor: false, trackingMode: DEFAULT_TRACKING_MODE, clickThrough: false, reducedMotion: false, contextBubbles: true, position: null };
   let manual = null, currentState = 'idle', stateStarted = Date.now(), drag = null;
   let latestFrame = null, mouseIgnored = null;
@@ -123,6 +125,7 @@ else {
       { label: 'Context bubbles', type: 'checkbox', checked: preferences.contextBubbles, click: item => applyPreferences({ contextBubbles: item.checked }) },
       { label: 'Size', submenu: [.75,1,1.25,1.5,2].map(scale => ({ label: Math.round(scale*100) + '%', type:'radio', checked: preferences.scale === scale, click: () => applyPreferences({scale}) })) },
       { label: 'Reset position', click: resetPosition },
+      { label: 'App connections…', click: () => integrations.show() },
       { label: 'Show / hide (Ctrl+Alt+M)', click: () => window.isVisible() ? window.hide() : window.showInactive() },
       { type:'separator' }, { label: 'Quit Mini Mad Cat', click: () => app.quit() }
     ];
@@ -180,8 +183,13 @@ else {
     if (preferences.position && !wayland) window.setPosition(Math.round(preferences.position.x), Math.round(preferences.position.y)); else resetPosition();
     keepOnScreen();
     await window.loadFile(path.join(__dirname, 'index.html'));
+    integrations = setupWindowController(app, dataDir);
     if (hidden) { window.webContents.setFrameRate(30); window.webContents.startPainting(); }
     if (!hidden) window.showInactive();
+    if (!hidden) {
+      if (setupRequested) integrations.show();
+      else if (!capture) integrations.offerOnFirstLaunch();
+    }
     window.on('move', saveSettingsSoon);
     bindIpc('pet:drawn-frame', cell => {
       const optional = cell?.sheet === 'mobility' && !!spriteImages.mobility;
@@ -303,7 +311,13 @@ else {
       if(process.argv.includes('--capture-exit'))setTimeout(()=>app.quit(),captureTimes.at(-1)+300);
     }
   }).catch(error => { console.error(error); dialog.showErrorBox('Mini Mad Cat could not start', error.message); app.quit(); });
-  app.on('second-instance', () => { if (window) window.showInactive(); });
+  app.on('second-instance', (_event, args) => {
+    if (window && !hidden) window.showInactive();
+    if (args.includes('--setup')) {
+      setupRequested = true;
+      if (!hidden) integrations?.show();
+    }
+  });
   app.on('window-all-closed', () => app.quit());
   app.on('before-quit', () => {
     clearInterval(interval); clearTimeout(saveTimer); globalShortcut.unregisterAll();

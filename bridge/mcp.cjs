@@ -20,10 +20,10 @@ async function route(message){
   const done=result=>response(message.id,modern?{...result,resultType:'complete',_meta:{...(result._meta||{}),'io.modelcontextprotocol/serverInfo':serverInfo}}:result);
   if(message.method==='server/discover'){
     if(!modern){error(message.id,-32022,'Unsupported protocol version',{supported:[modernVersion,...versions],requested:requested??null});return;}
-    done({supportedVersions:[modernVersion,...versions],capabilities:{tools:{}},instructions:'Controls the same-user local Mini Mad Cat companion. Start npm start separately. No chat transcript is collected.'});return;
+    done({supportedVersions:[modernVersion,...versions],capabilities:{tools:{}},instructions:'Controls the same-user local Mini Mad Cat companion. Open the companion separately. No chat transcript is collected.'});return;
   }
   if(message.method==='initialize'){
-    response(message.id,{protocolVersion:versions.includes(params.protocolVersion)?params.protocolVersion:versions[0],capabilities:{tools:{listChanged:false}},serverInfo,instructions:'Controls only the local Mini Mad Cat desktop companion. Start it with npm start. No network account or API key is required.'});return;
+    response(message.id,{protocolVersion:versions.includes(params.protocolVersion)?params.protocolVersion:versions[0],capabilities:{tools:{listChanged:false}},serverInfo,instructions:'Controls only the local Mini Mad Cat desktop companion. Open the companion separately. No network account or API key is required.'});return;
   }
   if(message.method==='ping'){done({});return;}
   if(message.method==='tools/list'){done({tools});return;}

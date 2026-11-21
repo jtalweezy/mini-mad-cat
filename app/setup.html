@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Mini Mad Cat · App connections</title>
+  <link rel="stylesheet" href="setup.css">
+  <script src="setup.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="pet" aria-hidden="true"></div>
+      <div>
+        <h1>Connect your apps</h1>
+        <p>Choose which local apps can send task reactions to Mini Mad Cat.</p>
+      </div>
+    </header>
+    <form id="setup">
+      <fieldset>
+        <legend>Local apps</legend>
+        <p id="summary">Looking for supported apps…</p>
+        <div id="apps"></div>
+      </fieldset>
+      <p id="status" role="status" aria-live="polite"></p>
+      <footer>
+        <p>Restart a connected app to load its changes.</p>
+        <div class="actions">
+          <button id="close" type="button">Close</button>
+          <button id="save" type="submit" disabled>Save connections</button>
+        </div>
+      </footer>
+    </form>
+  </main>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "electron": {
+    "version": "45.4.1",
+    "checksums": {
+      "darwin-arm64": "d080c3b05a01bd16137f2c12ab9ebf083c577757fe846844ba325bafa8e8bdf4",
+      "darwin-x64": "1c80d2ccf71b02c8fd9940fd09cafe88090a48c1bab0193c79b597b08d890e79",
+      "linux-arm64": "3da04c450fa682e3b80961e92a918a1c2a1a10796527a7e63dec7b8e466b6334",
+      "linux-x64": "e1d077c7a087d7e344350ea0c5cd2b7dc5af3d9bf7979474f38e0fc1a560b875",
+      "win32-arm64": "5ad2f09093cba71ad7dc8ddb2ef7261978c9130aa07e492556efe802f6ca74e9",
+      "win32-x64": "2ba6223afa9121f42831fefe92c434334907540165294fc56697449d12e7cfe9"
+    }
+  },
+  "node": {
+    "version": "24.22.3",
+    "checksumSigner": "5BE8A3F6C8A5C01D106C0AD820B1A390B168D356",
+    "checksums": {
+      "darwin-arm64": "ff6e17d4874b76d272212b908cc020d6e815fba5a6c7eaaa06add725840307fd",
+      "darwin-x64": "977614af0504c81045e7fd85596dbca0e5f951b96681516dadafedcca8c447f7",
+      "linux-arm64": "261af2af250dfd7e9f25cf151d1b2713a0adf8f10a9ad116c4947f68627affe8",
+      "linux-x64": "061ec3e3062115705b56b51fa9cc330ab50d34b6969387d4e4b1a50c6809acc2",
+      "win32-arm64": "b3cc74a295b39d4f273271e96f58c06dd2b35757ca12abec64c7d0598b434f14",
+      "win32-x64": "e612af99f626ab415ea225af6bce5c971feb448cb5cae250bb1c3fa50c5f7d9f"
+    }
+  }
+}

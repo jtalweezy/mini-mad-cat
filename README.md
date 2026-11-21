@@ -6,7 +6,9 @@ A tiny Mad Cat / Timber Wolf desktop copilot: it watches the pointer, follows it
 
 ## Download and start
 
-Download the complete ZIP from [Releases](https://github.com/jtalweezy/mini-mad-cat/releases/latest), then extract it to a permanent folder. Install Node.js 22 or newer. In the extracted folder:
+See the [native package and app-connection guide](docs/INSTALL.md) for platform packages and first-run setup. Use the source kit below when you want to run from a checkout or install with Node.js.
+
+Download **Source code (zip)** from [Releases](https://github.com/jtalweezy/mini-mad-cat/releases/latest), then extract it to a permanent folder. Install Node.js 22 or newer. In the extracted folder:
 
 ```sh
 npm ci
