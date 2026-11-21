@@ -3,6 +3,9 @@
   "version": "1.0.4",
   "private": true,
   "description": "Local Mini Mad Cat desktop companion and MCP bridge",
+  "homepage": "https://github.com/jtalweezy/mini-mad-cat",
+  "author": "Mini Mad Cat contributors",
+  "license": "MIT",
   "main": "app/main.cjs",
   "engines": {
     "node": ">=22"
@@ -13,9 +16,18 @@
     "test:gui": "node scripts/smoke.cjs",
     "check:art": "node scripts/check-art.cjs",
     "mcp": "node bridge/mcp.cjs",
-    "config": "node scripts/print-config.cjs"
+    "config": "node scripts/print-config.cjs",
+    "package": "node build/package.cjs"
   },
   "devDependencies": {
-    "electron": "45.4.1"
+    "electron": "45.4.1",
+    "electron-builder": "26.18.0"
+  },
+  "dependencies": {
+    "jsonc-parser": "3.3.1",
+    "smol-toml": "1.9.1"
+  },
+  "overrides": {
+    "minimatch@>=7.0.0 <11.0.1": "11.0.9"
   }
 }
