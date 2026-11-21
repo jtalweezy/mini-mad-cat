@@ -1,6 +1,6 @@
 {
   "name": "mini-mad-cat-companion",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "description": "Local Mini Mad Cat desktop companion and MCP bridge",
   "main": "app/main.cjs",

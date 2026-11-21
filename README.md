@@ -21,7 +21,7 @@ Windows also includes `install.ps1`; macOS/Linux include `install.sh`. In Window
 
 Right-click the mech or open its tray menu and choose **Mouse tracking → 10 seconds after click**. A primary click on the visible mech or the end of a drag starts the window. Its feet stay planted and point forward while the torso aims at the pointer. It faces forward again when the window expires and continues responding to connected apps. Keep **Click through** off to activate the timer by clicking. **Always** keeps tracking active and **Off** disables automatic looking and chasing. The mode is saved and each launch starts a new session.
 
-Enable **Follow cursor** to let it travel while tracking. It walks with an alternating, avian gait to either side, fires jump jets as it climbs, and lowers into a staggered crouch as it moves down. Reactions take priority over automatic travel. Drag to reposition it and double-click to salute. The menu also includes reduced motion, context bubbles, scale, reset, and quit. `Ctrl+Alt+M` / `Cmd+Alt+M` shows or hides it.
+Enable **Follow cursor** to let it travel while tracking. It pauses the chase when your pointer approaches the mech so you can click or grab it. It walks with an alternating, avian gait to either side, fires jump jets as it climbs, and lowers into a staggered crouch as it moves down. Reactions take priority over automatic travel. Drag to reposition it and double-click to salute. The menu also includes reduced motion, context bubbles, scale, reset, and quit. `Ctrl+Alt+M` / `Cmd+Alt+M` shows or hides it.
 
 [Preview the gait, torso turns, jump jets, and crouch](docs/motion-demo.gif).
 

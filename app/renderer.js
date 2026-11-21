@@ -11,11 +11,21 @@ function render(){
   const source=useMobility?mobilityImage:image;
   const cell=frame.sheet==='mobility'&&!useMobility?(frame.fallback||{row:0,column:0}):frame;
   context.clearRect(0,0,192,208);context.drawImage(source,cell.column*192,cell.row*208,192,208,0,0,192,208);
+  window.madcat.drawnFrame({ sheet:useMobility?'mobility':'core', row:cell.row, column:cell.column });
 }
 image.onload=render;image.src='../assets/spritesheet.png';
 window.madcat.onFrame(value=>{const optional=value.sheet==='mobility';if(Number.isInteger(value.row)&&value.row>=0&&value.row<(optional?2:11)&&Number.isInteger(value.column)&&value.column>=0&&value.column<(optional?6:8)){frame=value;render();}});
-canvas.addEventListener('pointerdown',event=>{if(event.button===0){canvas.setPointerCapture(event.pointerId);window.madcat.startDrag();}});
+canvas.addEventListener('pointerdown', event => {
+  if (event.button !== 0 || !event.isPrimary) return;
+  const bounds = canvas.getBoundingClientRect();
+  const x = (event.clientX - bounds.left) * canvas.width / bounds.width;
+  const y = (event.clientY - bounds.top) * canvas.height / bounds.height;
+  if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) return;
+  canvas.setPointerCapture(event.pointerId);
+  window.madcat.startDrag({ x,y });
+});
 canvas.addEventListener('pointerup',()=>window.madcat.endDrag());
+canvas.addEventListener('pointercancel',()=>window.madcat.endDrag());
 canvas.addEventListener('lostpointercapture',()=>window.madcat.endDrag());
 canvas.addEventListener('dblclick',()=>window.madcat.wave());
 canvas.addEventListener('contextmenu',event=>{event.preventDefault();window.madcat.menu();});
