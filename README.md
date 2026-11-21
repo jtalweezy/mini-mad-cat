@@ -17,6 +17,8 @@ npm start
 
 Windows also includes `install.ps1`; macOS/Linux include `install.sh`. In Windows PowerShell, use `npm.cmd` if your execution policy blocks `npm.ps1`. Dependencies are locked; installation downloads the Electron runtime for the target operating system. The download is a source kit, not a signed OS installer.
 
+**On a Mac:** follow the [macOS installation guide](docs/MACOS.md) for Apple silicon/Intel requirements, `sh ./install.sh`, standalone controls, and optional connections to the same local agents. No Docker or MCP client is needed to run the pet.
+
 The default is a stationary mech that looks toward the mouse pointer. Drag the visible mech to move it, double-click to salute, or use the tray/right-click menu. Enable **Follow cursor** to make it chase. Transparent space passes pointer clicks through. The menu includes reduced motion, context bubbles, scale, reset, and quit. `Ctrl+Alt+M` / `Cmd+Alt+M` shows or hides it.
 
 For tracking only after you interact with it, open the tray or right-click menu and choose **Mouse tracking → 15 seconds after click**. Each primary click on the visible mech, or the end of a drag, starts a fresh 15-second window for looking toward the pointer and optional **Follow cursor** movement. It returns to its normal idle animation when the window ends. **Always** keeps the original behavior; **Off** disables automatic looking and chasing. Turn **Click through** off in the tray before trying to activate it by clicking. The chosen mode is saved, while the temporary tracking window resets when the app restarts.

@@ -2,6 +2,8 @@
 
 This bundle contains an animated miniature Mad Cat, a desktop overlay, a local controller, and an MCP stdio bridge. Read this file and the root README before installing. Preserve the included character artwork and animation manifest.
 
+For macOS, use [docs/MACOS.md](docs/MACOS.md). The bundled Electron runtime requires macOS 13+; use native arm64 Node on Apple silicon or x64 Node on Intel. `sh ./install.sh` followed by `npm start` runs the companion without Docker or an MCP host. Connect a provider only when requested.
+
 ## Install on the target computer
 
 1. Extract the complete archive into a stable application directory owned by the user. Keep the assets, runtime, bridge, package files, and documentation together.
@@ -20,7 +22,7 @@ The archive itself does not edit global agent configuration, install startup ser
 - Check that pointer pass-through and interactive controls behave as intended, and that pause/quit can recover the desktop.
 - Record the OS, display server, Node/Electron versions, host-client version, checks run, and visible result. Report untested combinations honestly.
 
-The source was developed on Windows. macOS and Linux are portability targets, with target-machine visual verification still required unless the bundled validation record says otherwise. On Linux, native Wayland restricts global cursor/window positioning; consult `INTEGRATIONS.md` for the X11/XWayland route.
+The source was developed on Windows. macOS CI covers headless Node tests and artwork validation; macOS desktop rendering, pointer/menu behavior, and provider installations remain unverified. macOS and Linux still require target-machine visual verification unless the bundled validation record says otherwise. On Linux, native Wayland restricts global cursor/window positioning; consult `INTEGRATIONS.md` for the X11/XWayland route.
 
 ## Agent behavior
 
