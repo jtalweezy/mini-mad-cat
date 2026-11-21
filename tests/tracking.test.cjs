@@ -40,6 +40,20 @@ test('a new completed interaction renews once while querying behavior or changin
   assert.equal(tracking.status().active,false);
 });
 
+test('clearing a sleep-interrupted interaction preserves the tracking mode', () => {
+  const tracking = createTrackingController({ now: () => 100 });
+  tracking.notePrimaryInteraction();
+  assert.equal(tracking.status().active, true);
+  tracking.clearInteraction();
+  assert.equal(tracking.status().remainingMs, 0);
+  assert.equal(tracking.behavior({ followCursor: true }).chase, false);
+  tracking.notePrimaryInteraction();
+  assert.equal(tracking.behavior().gaze, true);
+  tracking.setMode('always');
+  tracking.clearInteraction();
+  assert.equal(tracking.behavior().gaze, true);
+});
+
 test('off/mode transitions/restart clear temporary permission and explicit dragging does not enable automatic gaze or chase', () => {
   let now = 0;
   const tracking = createTrackingController({mode:'after-click',now:()=>now});

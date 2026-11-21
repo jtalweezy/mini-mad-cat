@@ -1,5 +1,5 @@
 'use strict';
-const { app, BrowserWindow, Menu, Tray, nativeImage, screen, ipcMain, globalShortcut, dialog } = require('electron');
+const { app, BrowserWindow, Menu, Tray, nativeImage, screen, ipcMain, globalShortcut, dialog, powerMonitor } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
@@ -12,7 +12,7 @@ const { createReactionController } = require('../lib/reactions.cjs');
 const { DEFAULT_TRACKING_MODE, TRACKING_MODES, TRACKING_WINDOW_MS, createTrackingController } = require('../lib/tracking.cjs');
 const { CAPTURE_TIMES, captureRequest, captureTarget, writeCapture } = require('../lib/capture-output.cjs');
 const { mobility, classifyMotion, canChase, travelVisual } = require('../lib/mobility.cjs');
-const { HIT_ALPHA, spritePoint, isSpritePoint, anchorInWindow, opaqueBounds, nearOpaqueBounds } = require('../lib/pointer.cjs');
+const { HIT_ALPHA, isFinitePoint, isUsableRect, spritePoint, isSpritePoint, anchorInWindow, opaqueBounds, nearOpaqueBounds } = require('../lib/pointer.cjs');
 const { setupWindowController } = require('./integration-window.cjs');
 const reactionPolicy = require('../config/reactions.json');
 const reactionController = createReactionController(reactionPolicy);
@@ -32,7 +32,7 @@ else {
   let manual = null, currentState = 'idle', stateStarted = Date.now(), drag = null;
   let latestFrame = null, mouseIgnored = null;
   let renderedCell = { row: 0, column: 0, sheet: 'core' };
-  let pointerNearby = false;
+  let pointerNearby = false, suspended = false;
   let motionMode = null, motionStarted = Date.now(), thrustActive = false;
   const optionalAssets = { mobility: false, thrust: false };
   const alphaFrames = new Map();
@@ -96,16 +96,20 @@ else {
     saveSettingsSoon(); updateMenu();
   }
   function resetPosition() {
-    const area = screen.getPrimaryDisplay().workArea;
-    const [width, height] = window.getSize();
+    const area = screen.getPrimaryDisplay()?.workArea;
+    const bounds = window.getBounds();
+    if (!isUsableRect(area) || !isUsableRect(bounds)) return;
+    const { width, height } = bounds;
     window.setPosition(area.x + area.width - width - 32, area.y + area.height - height - 24);
     saveSettingsSoon();
   }
   function keepOnScreen() {
     if (wayland) return;
-    const [x, y] = window.getPosition();
-    const [width, height] = window.getSize();
-    const area = screen.getDisplayMatching({ x, y, width, height }).workArea;
+    const bounds = window.getBounds();
+    if (!isUsableRect(bounds)) return;
+    const { x, y, width, height } = bounds;
+    const area = screen.getDisplayMatching(bounds)?.workArea;
+    if (!isUsableRect(area)) return;
     const fixed = clampPosition(x, y, width, height, area);
     window.setPosition(fixed.x, fixed.y);
   }
@@ -162,12 +166,16 @@ else {
       if (!isSpritePoint(point, LAYOUT)) return 0;
       return alphaMask(cell).bitmap[(Math.floor(point.y) * LAYOUT.petWidth + Math.floor(point.x)) * 4 + 3];
     }
-    function cursorOnSprite(cursor) {
-      const bounds = window.getContentBounds();
-      if (process.platform !== 'win32') return spritePoint(cursor, bounds, LAYOUT);
-      // Convert each from its owning display's DIPs to physical coordinates.
-      // The window can temporarily straddle displays with different scales.
-      return spritePoint(screen.dipToScreenPoint(cursor), screen.dipToScreenRect(window, bounds), LAYOUT);
+    function cursorOnSprite(cursor, content) {
+      if (!isFinitePoint(cursor) || !isUsableRect(content)) return null;
+      if (process.platform !== 'win32') return spritePoint(cursor, content, LAYOUT);
+      try {
+        // The cursor and window may be on displays with different DPI scales.
+        return spritePoint(screen.dipToScreenPoint(cursor), screen.dipToScreenRect(window, content), LAYOUT);
+      } catch {
+        // Windows can still be rebuilding its display layout after wake.
+        return null;
+      }
     }
     window = new BrowserWindow({
       width: Math.round(LAYOUT.width * preferences.scale), height: Math.round(LAYOUT.height * preferences.scale),
@@ -199,7 +207,7 @@ else {
       renderedCell = { sheet:cell.sheet, row:cell.row, column:cell.column };
     });
     bindIpc('pet:drag-start', point => {
-      if (!cursorTracking || preferences.clickThrough || drag || alphaAt(point, renderedCell) < HIT_ALPHA) return;
+      if (!cursorTracking || suspended || preferences.clickThrough || drag || alphaAt(point, renderedCell) < HIT_ALPHA) return;
       // The renderer supplies the pointer-down location in the frame it drew.
       // Polling the cursor again here can reject a valid click after movement.
       tracking.notePrimaryInteraction();
@@ -235,32 +243,54 @@ else {
       return status();
     }});
     writeEndpoint(dataDir, { port:control.port, token:control.token, pid:process.pid, version:1 });
+    function setSuspended(value) {
+      suspended = value;
+      drag = null;
+      pointerNearby = false;
+      tracking.clearInteraction();
+    }
+    powerMonitor.on('suspend', () => setSuspended(true));
+    powerMonitor.on('resume', () => setSuspended(false));
     interval = setInterval(() => {
       if (!window || window.isDestroyed()) return;
       const now = Date.now();
-      let [x,y] = window.getPosition(); const [width,height] = window.getSize();
+      const bounds = window.getBounds();
+      const { width, height } = bounds;
+      let { x, y } = bounds;
       const originX = x, originY = y;
       if (manual && now >= manual.until) manual = null;
-      const cursor = cursorTracking ? screen.getCursorScreenPoint() : null;
-      const pointerBehavior = tracking.behavior({available:cursorTracking,followCursor:preferences.followCursor,dragging:!!drag});
+      const cursor = cursorTracking && !suspended ? screen.getCursorScreenPoint() : null;
+      const content = window.getContentBounds();
+      let point = isUsableRect(bounds) ? cursorOnSprite(cursor, content) : null;
+      if (!point) drag = null;
+      const pointerBehavior = tracking.behavior({available:!!point,followCursor:preferences.followCursor,dragging:!!drag});
       // Let the user approach the pet while it follows. The larger exit margin
       // prevents small pointer or sprite changes from making it run away again.
-      pointerNearby = !!cursor && !preferences.clickThrough &&
-        nearOpaqueBounds(cursorOnSprite(cursor), alphaMask(renderedCell).bounds, pointerNearby ? 18 : 10);
-      if (drag && cursor) {
-        const area = screen.getDisplayNearestPoint(cursor).workArea;
-        const anchor = anchorInWindow(drag, window.getContentBounds(), { x,y }, LAYOUT);
-        const pos = clampPosition(cursor.x-anchor.x, cursor.y-anchor.y, width,height,area);
-        window.setPosition(pos.x,pos.y); x=pos.x; y=pos.y;
-      } else if (!pointerNearby && canChase({trackingAllowsChase:pointerBehavior.chase,manualActive:!!manual,dragging:!!drag}) && cursor) {
-        const area = screen.getDisplayNearestPoint(cursor).workArea;
-        const anchor = anchorInWindow({ x:LAYOUT.petWidth*.75, y:0 }, window.getContentBounds(), { x,y }, LAYOUT);
-        const target = clampPosition(cursor.x-anchor.x, cursor.y+40-anchor.y, width,height,area);
-        const dx=target.x-x, dy=target.y-y, distance=Math.hypot(dx,dy);
-        if (distance > 10) { const step=Math.min(distance,4); x=Math.round(x+dx/distance*step); y=Math.round(y+dy/distance*step); window.setPosition(x,y); }
+      pointerNearby = !!point && !preferences.clickThrough &&
+        nearOpaqueBounds(point, alphaMask(renderedCell).bounds, pointerNearby ? 18 : 10);
+      const chase = !pointerNearby && canChase({trackingAllowsChase:pointerBehavior.chase,manualActive:!!manual,dragging:!!drag});
+      if (point && (drag || chase)) {
+        const area = screen.getDisplayNearestPoint(cursor)?.workArea;
+        if (isUsableRect(area)) {
+          const anchor = anchorInWindow(drag || { x:LAYOUT.petWidth*.75, y:0 }, content, bounds, LAYOUT);
+          const target = clampPosition(cursor.x-anchor.x, cursor.y-anchor.y+(drag ? 0 : 40), width,height,area);
+          if (drag) {
+            x = target.x; y = target.y;
+          } else {
+            const dx = target.x-x, dy = target.y-y, distance = Math.hypot(dx,dy);
+            if (distance > 10) {
+              const step = Math.min(distance,4);
+              x = Math.round(x+dx/distance*step); y = Math.round(y+dy/distance*step);
+            }
+          }
+        }
       }
-      const moving = x !== originX || y !== originY;
-      const nextMotion = manual ? null : classifyMotion(x-originX,y-originY,motionMode);
+      const moving = !!point && (x !== originX || y !== originY);
+      if (moving) {
+        window.setPosition(x,y);
+        point = cursorOnSprite(cursor, window.getContentBounds());
+      }
+      const nextMotion = manual || !moving ? null : classifyMotion(x-originX,y-originY,motionMode);
       if (nextMotion !== motionMode) { motionMode = nextMotion; motionStarted = now; if (!manual) stateStarted = now; }
       let desiredState = manual?.state || 'idle';
       if (motionMode) desiredState = mobility.modes[motionMode]?.fallbackState || motionMode;
@@ -272,19 +302,15 @@ else {
       }
       let cell = { ...animationCell(currentState, preferences.reducedMotion ? 0 : elapsed, {loop:!manual?.once}), sheet:'core', motion:null, thrust:false, reducedMotion:preferences.reducedMotion };
       if (motionMode) cell = travelVisual(motionMode,now-motionStarted,{mobilityAvailable:optionalAssets.mobility,thrustAvailable:optionalAssets.thrust,reducedMotion:preferences.reducedMotion});
-      if (!manual && !moving && currentState === 'idle' && pointerBehavior.gaze && cursor) {
-        const point = cursorOnSprite(cursor);
+      if (!manual && !moving && currentState === 'idle' && pointerBehavior.gaze && point) {
         const direction = directionForOffset(point.x-96, point.y-208*.46);
         if (direction !== null) cell = { ...cell, ...lookCell(direction) };
       }
-      if (cursor) {
-        const point = cursorOnSprite(cursor);
-        // Both the painted frame and the pending frame may be on screen
-        // during a renderer update. Keep a click valid through that handoff.
-        const hit = alphaAt(point, renderedCell) >= HIT_ALPHA || alphaAt(point, cell) >= HIT_ALPHA;
-        const shouldIgnore=preferences.clickThrough || (!drag && !hit);
-        if(mouseIgnored!==shouldIgnore){window.setIgnoreMouseEvents(shouldIgnore,{forward:true});mouseIgnored=shouldIgnore;}
-      }
+      // A missing sample lets clicks pass through until display data recovers.
+      // Check both frames during a renderer update so a hit stays clickable.
+      const hit = alphaAt(point, renderedCell) >= HIT_ALPHA || alphaAt(point, cell) >= HIT_ALPHA;
+      const shouldIgnore = preferences.clickThrough || !point || (!drag && !hit);
+      if (mouseIgnored !== shouldIgnore) { window.setIgnoreMouseEvents(shouldIgnore,{forward:true}); mouseIgnored = shouldIgnore; }
       thrustActive = cell.thrust;
       const serial = `${cell.sheet}:${cell.row}:${cell.column}:${currentState}:${cell.motion}:${cell.thrust}:${cell.thrustSpec?.column}:${cell.reducedMotion}`;
       if (serial !== latestFrame) { latestFrame = serial; window.webContents.send('pet:frame', { ...cell, state:currentState }); }
