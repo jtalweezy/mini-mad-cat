@@ -11,13 +11,15 @@ Use the published artifacts from [GitHub Releases](https://github.com/jtalweezy/
 
 The [source instructions](../README.md#download-and-start) are also available and use Node.js 22 or newer. See the [macOS guide](MACOS.md) for source installation and provider-specific instructions. The companion runs directly in your desktop session. MCP is optional and used when connecting supported apps.
 
+If you are switching from the source kit to a native package, quit the existing companion before opening the installed app.
+
 ## Choose your apps
 
 On the first packaged launch, **App connections** lists supported local apps and preselects the detected apps it can configure. Review the boxes and choose **Save connections**, or choose **Continue without connecting** to run the pet by itself. Restart each changed app to load its connection.
 
 Open **App connections…** from the tray or the mech's right-click menu later to connect or disconnect an app. You can also relaunch the companion with `--setup` if your desktop hides its tray menu. Clear the relevant checkboxes and save to disconnect the apps before removing the companion. The setup reports files it cannot safely edit so you can configure those hosts using their documented settings.
 
-The installer recognizes **Codex**, **Claude Desktop**, **Claude Code**, **Cursor**, and **Grok Build** where installed and supported. Local app availability varies by operating system. The manager uses each app's per-user configuration and only changes the Mini Mad Cat connection. Connections use the authenticated local bridge. The same setup works with the optional manual steps in [INTEGRATIONS.md](../INTEGRATIONS.md) if a host needs them.
+The installer recognizes **Codex**, **Claude Desktop**, **Claude Code**, **Cursor**, and **Grok Build** where installed and supported. Local app availability varies by operating system. The manager uses each app's per-user configuration and only changes the Mini Mad Cat MCP registration. Optional lifecycle hooks installed separately can be managed through their host's plugin settings. Connections use the authenticated local bridge. For a host that needs manual setup, see [INTEGRATIONS.md](../INTEGRATIONS.md).
 
 ## Linux displays
 
