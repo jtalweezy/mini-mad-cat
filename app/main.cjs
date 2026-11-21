@@ -9,7 +9,7 @@ const { ensurePrivateDirectory, writeEndpoint } = require('../lib/endpoint-file.
 const { validateCommand } = require('../lib/commands.cjs');
 const { createControlServer } = require('../lib/control-server.cjs');
 const { createReactionController } = require('../lib/reactions.cjs');
-const { TRACKING_MODES, createTrackingController } = require('../lib/tracking.cjs');
+const { DEFAULT_TRACKING_MODE, TRACKING_MODES, TRACKING_WINDOW_MS, createTrackingController } = require('../lib/tracking.cjs');
 const { CAPTURE_TIMES, captureRequest, captureTarget, writeCapture } = require('../lib/capture-output.cjs');
 const reactionPolicy = require('../config/reactions.json');
 const reactionController = createReactionController(reactionPolicy);
@@ -24,7 +24,7 @@ app.setPath('userData', dataDir);
 if (!app.requestSingleInstanceLock()) { app.quit(); }
 else {
   let window, tray, control, interval, saveTimer;
-  let preferences = { scale: 1, followCursor: false, trackingMode: 'always', clickThrough: false, reducedMotion: false, contextBubbles: true, position: null };
+  let preferences = { scale: 1, followCursor: false, trackingMode: DEFAULT_TRACKING_MODE, clickThrough: false, reducedMotion: false, contextBubbles: true, position: null };
   let manual = null, currentState = 'idle', stateStarted = Date.now(), drag = null;
   let latestFrame = null, lastPosition = null, mouseIgnored = null;
   let renderedCell = { row: 0, column: 0 };
@@ -106,7 +106,7 @@ else {
       { type: 'separator' },
       { label: 'Mouse tracking', submenu: [
         { label: 'Always', mode: 'always' },
-        { label: '15 seconds after click', mode: 'after-click' },
+        { label: `${TRACKING_WINDOW_MS / 1000} seconds after click`, mode: 'after-click' },
         { label: 'Off', mode: 'off' }
       ].map(item => ({ label:item.label, type:'radio', checked:preferences.trackingMode===item.mode, enabled:cursorTracking||item.mode==='off', click:()=>applyPreferences({trackingMode:item.mode}) })) },
       { label: 'Follow cursor', type: 'checkbox', checked: preferences.followCursor, enabled: cursorTracking, click: item => applyPreferences({ followCursor: item.checked }) },

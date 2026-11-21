@@ -31,7 +31,7 @@ The installer runs `npm ci`, the non-GUI tests, and the artwork check. Dependenc
 
 Use the menu-bar icon or right-click the visible mech for its menu. Drag the mech to reposition it; double-click to salute. **Follow cursor** enables chasing. **Cmd+Option+M** shows or hides the overlay.
 
-Choose **Mouse tracking → 15 seconds after click** for tracking only after interaction. A primary click on the visible mech or the end of a drag starts a fresh 15-second window for gaze and optional chasing, then returns to idle. **Always** tracks continuously; **Off** disables automatic gaze/chasing. Keep **Click through** off to activate the timed mode by clicking. The mode is saved; the timed window resets at restart. Reduced motion, context bubbles, size, reset position, and quit are also available in the menu.
+Choose **Mouse tracking → 10 seconds after click** for tracking only after interaction. A primary click on the visible mech or the end of a drag starts a fresh 10-second window for gaze and optional chasing, then returns to idle. **Always** tracks continuously; **Off** disables automatic gaze/chasing. Keep **Click through** off to activate the timed mode by clicking. The mode is saved; the timed window resets at restart. Reduced motion, context bubbles, size, reset position, and quit are also available in the menu.
 
 ## Local controls and reaction demos
 
