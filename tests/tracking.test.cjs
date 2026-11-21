@@ -5,23 +5,24 @@ const { createTrackingController, TRACKING_WINDOW_MS } = require('../lib/trackin
 const { commandForTool } = require('../bridge/tools.cjs');
 const { validateCommand } = require('../lib/commands.cjs');
 
-test('existing settings retain always-on gaze and the independent followCursor toggle', () => {
-  const tracking = createTrackingController();
+test('the default waits for a click and Always retains the independent followCursor toggle', () => {
+  assert.deepEqual(createTrackingController().behavior(), {active:false,gaze:false,chase:false});
+  const tracking = createTrackingController({ mode: 'always' });
   assert.deepEqual(tracking.behavior(), {active:true,gaze:true,chase:false});
   assert.deepEqual(tracking.behavior({followCursor:true}), {active:true,gaze:true,chase:true});
   assert.deepEqual(tracking.behavior({available:false,followCursor:true}), {active:false,gaze:false,chase:false});
 });
 
-test('after-click mode gates both gaze and chase at the exact monotonic 15-second boundary', () => {
+test('after-click mode gates both gaze and chase at the exact monotonic 10-second boundary', () => {
   let now = 0;
   const tracking = createTrackingController({mode:'after-click',now:()=>now});
-  assert.equal(TRACKING_WINDOW_MS,15000);
+  assert.equal(TRACKING_WINDOW_MS,10000);
   assert.deepEqual(tracking.behavior({followCursor:true}), {active:false,gaze:false,chase:false});
   tracking.notePrimaryInteraction();
-  now = 14999;
+  now = 9999;
   assert.deepEqual(tracking.behavior({followCursor:true}), {active:true,gaze:true,chase:true});
   assert.equal(tracking.status().remainingMs,1);
-  now = 15000;
+  now = 10000;
   assert.deepEqual(tracking.behavior({followCursor:true}), {active:false,gaze:false,chase:false});
   assert.equal(tracking.status().remainingMs,0);
 });
@@ -32,10 +33,10 @@ test('a new completed interaction renews once while querying behavior or changin
   tracking.notePrimaryInteraction();
   now = 10000;
   tracking.behavior({followCursor:true});tracking.behavior({followCursor:false});tracking.setMode('after-click');
-  assert.equal(tracking.status().remainingMs,6000);
+  assert.equal(tracking.status().remainingMs,1000);
   tracking.notePrimaryInteraction();
-  assert.equal(tracking.status().remainingMs,15000);
-  now = 25000;
+  assert.equal(tracking.status().remainingMs,10000);
+  now = 20000;
   assert.equal(tracking.status().active,false);
 });
 
@@ -44,7 +45,7 @@ test('off/mode transitions/restart clear temporary permission and explicit dragg
   const tracking = createTrackingController({mode:'after-click',now:()=>now});
   tracking.notePrimaryInteraction();
   assert.deepEqual(tracking.behavior({followCursor:true,dragging:true}), {active:true,gaze:false,chase:false});
-  now = 16000;
+  now = 11000;
   assert.deepEqual(tracking.behavior({followCursor:true,dragging:true}), {active:false,gaze:false,chase:false});
   tracking.setMode('off');tracking.notePrimaryInteraction();assert.equal(tracking.status().active,false);
   tracking.setMode('always');assert.equal(tracking.status().active,true);
