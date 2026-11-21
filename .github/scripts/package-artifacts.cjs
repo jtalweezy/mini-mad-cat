@@ -78,7 +78,11 @@ async function main([command, ...args]) {
   throw new Error('Use stage <platform> <arch> <source> <destination>, checksum <platform> <arch> <directory>, or complete-release <directory>');
 }
 
-main(process.argv.slice(2)).catch(error => {
-  console.error(error.message);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  main(process.argv.slice(2)).catch(error => {
+    console.error(error.message);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { verifyFormat };

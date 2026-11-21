@@ -109,7 +109,7 @@ jobs:
       - name: Verify bundled runtime and stage packages
         shell: bash
         run: |
-          node .github/scripts/check-bundled-bridge.cjs dist/packages "$TARGET_ARCH"
+          node .github/scripts/check-bundled-bridge.cjs "$TARGET_ARCH"
           node .github/scripts/package-artifacts.cjs stage "$TARGET_PLATFORM" "$TARGET_ARCH" dist/packages dist/verified
       - name: Verify published Windows signer identity
         if: runner.os == 'Windows'

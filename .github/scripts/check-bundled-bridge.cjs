@@ -5,15 +5,24 @@ const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const { node } = require('../../build/upstream-runtimes.json');
 
-function resourceCandidates(directory) {
-  const resources = [];
-  for (const item of fs.readdirSync(directory, { withFileTypes: true })) {
-    if (!item.isDirectory()) continue;
-    if (item.name.endsWith('.app')) resources.push(path.join(directory, item.name, 'Contents', 'Resources'));
-    else if (/^mac(?:-arm64|-x64)?$/.test(item.name)) resources.push(...resourceCandidates(path.join(directory, item.name)));
-    else if (/^(linux|win)(?:-arm64|-x64)?-unpacked$/.test(item.name)) resources.push(path.join(directory, item.name, 'resources'));
+const outputDirectory = path.join(__dirname, '..', '..', 'dist', 'packages');
+const resourceLocations = {
+  'win32-x64': ['win-unpacked', 'resources'],
+  'win32-arm64': ['win-arm64-unpacked', 'resources'],
+  'darwin-x64': ['mac', 'Mini Mad Cat.app', 'Contents', 'Resources'],
+  'darwin-arm64': ['mac-arm64', 'Mini Mad Cat.app', 'Contents', 'Resources'],
+  'linux-x64': ['linux-unpacked', 'resources'],
+  'linux-arm64': ['linux-arm64-unpacked', 'resources']
+};
+
+function packagedFile(root, filename) {
+  const resolved = fs.realpathSync.native(filename);
+  const relative = path.relative(root, resolved);
+  if (path.isAbsolute(relative) || !relative || relative === '..' || relative.startsWith('..' + path.sep) ||
+      !fs.statSync(resolved).isFile()) {
+    throw new Error('Expected a regular packaged file inside the build directory');
   }
-  return resources;
+  return resolved;
 }
 
 function run(binary, args, input) {
@@ -24,16 +33,19 @@ function run(binary, args, input) {
 }
 
 function main() {
-  const [directory, expectedArchitecture] = process.argv.slice(2);
-  const resources = resourceCandidates(directory);
-  if (resources.length !== 1) throw new Error('Expected one native packaged application');
-  const executable = path.join(resources[0], 'bridge-runtime', process.platform === 'win32' ? 'node.exe' : 'node');
+  const [expectedArchitecture] = process.argv.slice(2);
+  if (expectedArchitecture !== process.arch) throw new Error('Packager host architecture does not match the build target');
+  const location = resourceLocations[process.platform + '-' + process.arch];
+  if (!location) throw new Error('Unsupported native package target');
+  const root = fs.realpathSync.native(outputDirectory);
+  const resources = path.join(outputDirectory, ...location);
+  const executable = packagedFile(root, path.join(resources, 'bridge-runtime', process.platform === 'win32' ? 'node.exe' : 'node'));
   const runtime = JSON.parse(run(executable, ['-p', 'JSON.stringify([process.version,process.arch,process.platform])']));
   if (runtime[0] !== `v${node.version}` ||
       runtime[1] !== expectedArchitecture || runtime[2] !== process.platform) {
     throw new Error('Bundled runtime does not match the pinned version or target architecture');
   }
-  const bridge = path.join(resources[0], 'bridge-app', 'bridge', 'mcp.cjs');
+  const bridge = packagedFile(root, path.join(resources, 'bridge-app', 'bridge', 'mcp.cjs'));
   const request = JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list', params: {} }) + '\n';
   const response = JSON.parse(run(executable, [bridge], request));
   if (response.id !== 1 || !response.result?.tools?.some(tool => tool.name === 'pet_status')) {

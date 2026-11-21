@@ -3,7 +3,7 @@ name: Native package checks
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, 'native-*']
   workflow_dispatch:
 
 permissions:
@@ -45,7 +45,7 @@ jobs:
       - name: Verify bundled runtime and stage test artifacts
         shell: bash
         run: |
-          node .github/scripts/check-bundled-bridge.cjs dist/packages "$TARGET_ARCH"
+          node .github/scripts/check-bundled-bridge.cjs "$TARGET_ARCH"
           node .github/scripts/package-artifacts.cjs stage "$TARGET_PLATFORM" "$TARGET_ARCH" dist/packages dist/candidate
           node .github/scripts/package-artifacts.cjs checksum "$TARGET_PLATFORM" "$TARGET_ARCH" dist/candidate
       - name: Exercise the setup window against a fixture profile
