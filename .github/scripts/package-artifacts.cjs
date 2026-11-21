@@ -53,9 +53,11 @@ async function stage(platform, arch, source, destination) {
   for (const name of names) await fs.copyFile(path.join(source, name), path.join(destination, name));
 }
 
-async function completeRelease(directory) {
+async function completeRelease(directory, targets = 'all') {
+  if (targets !== 'all' && targets !== 'linux') throw new Error('Unrecognized release scope');
+  const platforms = targets === 'linux' ? ['linux'] : Object.keys(packageTypes);
   const expected = ['mini-mad-cat-linux-signing-key.asc'];
-  for (const platform of Object.keys(packageTypes)) {
+  for (const platform of platforms) {
     for (const arch of architectures) {
       for (const name of packageNames(platform, arch)) {
         await verifyFormat(path.join(directory, name));
@@ -74,8 +76,8 @@ async function completeRelease(directory) {
 async function main([command, ...args]) {
   if (command === 'stage' && args.length === 4) return stage(...args);
   if (command === 'checksum' && args.length === 3) return writeChecksums(args[2], packageNames(args[0], args[1]));
-  if (command === 'complete-release' && args.length === 1) return completeRelease(args[0]);
-  throw new Error('Use stage <platform> <arch> <source> <destination>, checksum <platform> <arch> <directory>, or complete-release <directory>');
+  if (command === 'complete-release' && [1, 2].includes(args.length)) return completeRelease(...args);
+  throw new Error('Use stage <platform> <arch> <source> <destination>, checksum <platform> <arch> <directory>, or complete-release <directory> [all|linux]');
 }
 
 if (require.main === module) {

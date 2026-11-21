@@ -11,6 +11,13 @@ on:
         description: Publish verified packages to GitHub Releases
         default: false
         type: boolean
+      targets:
+        description: Platforms to build and sign
+        default: all
+        type: choice
+        options:
+          - all
+          - linux
 
 permissions:
   contents: read
@@ -22,6 +29,8 @@ concurrency:
 jobs:
   verify-tag:
     runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.targets.outputs.matrix }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -36,6 +45,26 @@ jobs:
              "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
           [[ "$(git rev-parse --verify "refs/tags/$RELEASE_TAG^{commit}")" == "$GITHUB_SHA" ]]
           [[ "v$(jq -r '.version' package.json)" == "$RELEASE_TAG" ]]
+      - name: Select native release targets
+        id: targets
+        shell: bash
+        env:
+          RELEASE_TARGETS: ${{ inputs.targets }}
+        run: |
+          [[ "$RELEASE_TARGETS" == all || "$RELEASE_TARGETS" == linux ]]
+          matrix=$(jq -c --arg targets "$RELEASE_TARGETS" \
+            '{include: map(select($targets == "all" or .platform == $targets))}' <<'JSON'
+          [
+            { "platform": "win32", "arch": "x64", "runner": "windows-2025" },
+            { "platform": "win32", "arch": "arm64", "runner": "windows-11-arm" },
+            { "platform": "darwin", "arch": "x64", "runner": "macos-15-intel" },
+            { "platform": "darwin", "arch": "arm64", "runner": "macos-15" },
+            { "platform": "linux", "arch": "x64", "runner": "ubuntu-24.04" },
+            { "platform": "linux", "arch": "arm64", "runner": "ubuntu-24.04-arm" }
+          ]
+          JSON
+          )
+          printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
 
   sign:
     name: Sign (${{ matrix.platform }}, ${{ matrix.arch }})
@@ -48,14 +77,7 @@ jobs:
       attestations: write
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - { platform: win32, arch: x64, runner: windows-2025 }
-          - { platform: win32, arch: arm64, runner: windows-11-arm }
-          - { platform: darwin, arch: x64, runner: macos-15-intel }
-          - { platform: darwin, arch: arm64, runner: macos-15 }
-          - { platform: linux, arch: x64, runner: ubuntu-24.04 }
-          - { platform: linux, arch: arm64, runner: ubuntu-24.04-arm }
+      matrix: ${{ fromJSON(needs.verify-tag.outputs.matrix) }}
     runs-on: ${{ matrix.runner }}
     env:
       TARGET_PLATFORM: ${{ matrix.platform }}
@@ -71,7 +93,7 @@ jobs:
           package-manager-cache: false
       - run: npm ci --ignore-scripts
       - run: npm audit signatures
-      - run: npm audit --audit-level=high --ignore-scripts
+      - run: npm audit --audit-level=low --ignore-scripts
       - run: npm test
       - run: npm run check:art
       - name: Build Authenticode-signed Windows installer
@@ -169,8 +191,9 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_TARGETS: ${{ inputs.targets }}
         run: |
-          node .github/scripts/package-artifacts.cjs complete-release dist/release
+          node .github/scripts/package-artifacts.cjs complete-release dist/release "$RELEASE_TARGETS"
           for asset in dist/release/*; do
             if [[ "$asset" == dist/release/SHA256SUMS.txt ]]; then continue; fi
             gh attestation verify "$asset" --repo "$GITHUB_REPOSITORY" \
@@ -182,10 +205,15 @@ jobs:
         shell: bash
         env:
           RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_TARGETS: ${{ inputs.targets }}
           GH_TOKEN: ${{ github.token }}
         run: |
           [[ "$GITHUB_REF" == refs/heads/main && "$GITHUB_REF_PROTECTED" == true &&
              "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
           [[ "$(gh api "repos/$GITHUB_REPOSITORY/commits/$RELEASE_TAG" --jq .sha)" == "$GITHUB_SHA" ]]
-          gh release create "$RELEASE_TAG" dist/release/* --verify-tag --draft --generate-notes
+          notes=()
+          if [[ "$RELEASE_TARGETS" == linux ]]; then
+            notes=(--notes 'Signed installers are available for Linux x64 and ARM64. For Windows and macOS, see the source installation instructions in the README.')
+          fi
+          gh release create "$RELEASE_TAG" dist/release/* --verify-tag --draft --generate-notes "${notes[@]}"
           gh release edit "$RELEASE_TAG" --draft=false --latest
