@@ -1,5 +1,10 @@
 # Validation record
 
+## Version 1.0.3
+
+- The two side-walk rows use a short link from hip to rear knee and a longer link forward from knee to ankle. The wider steps keep both feet readable at a glance. The original Mini Mad Cat sprites were redrawn using geometry from [Piranha Games’ Timber Wolf Prime side elevation](https://image.api.playstation.com/vulcan/ap/rnd/202409/0501/f46d892693128c49e45094190199b6e1c0ea2c0071caf079.jpg).
+- The replacement changes exactly 16 walk frames. The other 41 animation frames, 16 torso-aim poses, and all transparent padding are pixel-identical to v1.0.2. Each left walk frame exactly mirrors the matching right walk frame, with the original timing and order.
+
 ## Version 1.0.2
 
 - On Windows, 33 unit tests passed and three platform-specific tests skipped. All four artwork files matched their recorded SHA-256 values and dimensions.
