@@ -2,6 +2,8 @@
 
 This bundle contains an animated miniature Mad Cat, a desktop overlay, a local controller, and an MCP stdio bridge. Read this file and the root README before installing. Preserve the included character artwork and animation manifest.
 
+For macOS, use [docs/MACOS.md](docs/MACOS.md). The bundled Electron runtime requires macOS 13+; use native arm64 Node on Apple silicon or x64 Node on Intel. `sh ./install.sh` followed by `npm start` runs the companion without Docker or an MCP host. Connect a provider only when requested.
+
 ## Install on the target computer
 
 1. Extract the complete archive into a stable application directory owned by the user. Keep the assets, runtime, bridge, package files, and documentation together.
@@ -20,7 +22,7 @@ The archive itself does not edit global agent configuration, install startup ser
 - Check that pointer pass-through and interactive controls behave as intended, and that pause/quit can recover the desktop.
 - Record the OS, display server, Node/Electron versions, host-client version, checks run, and visible result. Report untested combinations honestly.
 
-The source was developed on Windows. macOS and Linux are portability targets, with target-machine visual verification still required unless the bundled validation record says otherwise. On Linux, native Wayland restricts global cursor/window positioning; consult `INTEGRATIONS.md` for the X11/XWayland route.
+The source was developed on Windows. macOS CI covers headless Node tests and artwork validation; macOS desktop rendering, pointer/menu behavior, and provider installations remain unverified. macOS and Linux still require target-machine visual verification unless the bundled validation record says otherwise. On Linux, native Wayland restricts global cursor/window positioning; consult `INTEGRATIONS.md` for the X11/XWayland route.
 
 ## Agent behavior
 
@@ -30,7 +32,7 @@ The bridge exposes these tools:
 | --- | --- | --- |
 | `pet_status` | `{}` | Check the companion and its current state. |
 | `pet_animate` | `{"state":"waving","durationMs":1800}` | Set one of the nine standard states temporarily; duration is 100–300000 ms, default 7000. |
-| `pet_configure` | `{"followCursor":true,"clickThrough":false,"scale":1,"reducedMotion":false,"contextBubbles":true}` | Update the supplied behavior options; scale is 0.5–2. |
+| `pet_configure` | `{"followCursor":true,"trackingMode":"after-click","clickThrough":false,"scale":1,"reducedMotion":false,"contextBubbles":true}` | Update the supplied behavior options; scale is 0.5–2. Tracking modes are `always`, `after-click`, and `off`. |
 | `pet_reset` | `{}` | Clear a temporary animation. |
 | `pet_react` | `{"outcome":"success","impact":0.6,"confidence":0.95,"severity":0,"message":"Checks passed"}` | Send a weighted, evidence-based task outcome; the runtime chooses its animation/effect strength. |
 
@@ -40,9 +42,12 @@ The same controls work without MCP:
 node bridge/control.cjs status
 node bridge/control.cjs animate waving 1800
 node bridge/control.cjs configure '{"followCursor":true}'
+node bridge/control.cjs configure '{"trackingMode":"after-click","clickThrough":false}'
 ```
 
-Use shell-appropriate quoting for JSON on Windows. The default is a stationary pet that looks toward the cursor; enabling `followCursor` makes it chase. The tray/right-click menu also offers animation, follow, click-through, scale, reset-position, and quit controls. Drag to reposition; double-click to wave. `MADCAT_HOME` optionally selects its per-user data directory. That directory contains a local authentication token and must not be copied into a handoff archive.
+Use shell-appropriate quoting for JSON on Windows. By default, the pet looks toward the cursor for up to 10 seconds after a click. Enabling `followCursor` also lets it chase during that window. The tray/right-click menu also offers animation, follow, click-through, scale, reset-position, and quit controls. Drag to reposition; double-click to wave. `MADCAT_HOME` optionally selects its per-user data directory. That directory contains a local authentication token and must not be copied into a handoff archive.
+
+Use **Mouse tracking → 10 seconds after click** in the tray/right-click menu for interaction-triggered tracking. A primary click on visible mech artwork, or the end of an explicit drag, starts a fresh 10-second window. Both automatic gaze and optional chasing stop at expiry and the idle animation resumes. Hover, right-clicks, task reactions, and unrelated settings do not extend the window. Explicit dragging and transparent-area hit testing remain available while tracking is inactive. `always` enables continuous tracking, `off` disables automatic gaze/chase, and each restart clears timed permission. Keep `clickThrough:false` when the user wants to activate tracking by clicking the mech.
 
 Select `running` for active work; `waiting` while a response is required; `review` when examining completed work; `failed` for a concrete error; and `idle` after activity ends. `running-right`/`running-left` are locomotion, not working. Greeting (`waving`) and jump (`jumping`) are short attention gestures. Do not repeatedly interrupt the user's work with decorative events.
 

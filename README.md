@@ -17,7 +17,11 @@ npm start
 
 Windows also includes `install.ps1`; macOS/Linux include `install.sh`. In Windows PowerShell, use `npm.cmd` if your execution policy blocks `npm.ps1`. Dependencies are locked; installation downloads the Electron runtime for the target operating system. The download is a source kit, not a signed OS installer.
 
-The default is a stationary mech that looks toward the mouse pointer. Drag the visible mech to move it, double-click to salute, or use the tray/right-click menu. Enable **Follow cursor** to make it chase. Transparent space passes pointer clicks through. The menu includes reduced motion, context bubbles, scale, reset, and quit. `Ctrl+Alt+M` / `Cmd+Alt+M` shows or hides it.
+**On a Mac:** follow the [macOS installation guide](docs/MACOS.md) for Apple silicon/Intel requirements, `sh ./install.sh`, standalone controls, and optional connections to the same local agents. No Docker or MCP client is needed to run the pet.
+
+Click the stationary mech to make it look toward your pointer for up to 10 seconds. It faces forward again when the timer expires. Drag the visible mech to move it, double-click to salute, or use the tray/right-click menu. Enable **Follow cursor** to make it chase. Transparent space passes pointer clicks through. The menu includes reduced motion, context bubbles, scale, reset, and quit. `Ctrl+Alt+M` / `Cmd+Alt+M` shows or hides it.
+
+For tracking only after you interact with it, open the tray or right-click menu and choose **Mouse tracking → 10 seconds after click**. Each primary click on the visible mech, or the end of a drag, starts a fresh 10-second window for looking toward the pointer and optional **Follow cursor** movement. It returns to its normal idle animation when the window ends. **Always** keeps the original behavior; **Off** disables automatic looking and chasing. Turn **Click through** off in the tray before trying to activate it by clicking. The chosen mode is saved, while the temporary tracking window resets when the app restarts.
 
 ## Connect your chat agent
 
@@ -86,7 +90,7 @@ The sprite sheet also uses the ChatGPT Pets v2 format: 1536×2288, 192×208 cell
 
 The app binds an authenticated control server to `127.0.0.1` on a random port. Its same-user bridge discovers a random token in the per-user application data directory. Browser-origin requests are rejected. The renderer has Node disabled, context isolation, sandboxing, and a restrictive content policy. There is no analytics or automatic public endpoint.
 
-`MADCAT_HOME` can choose a separate local settings directory. Do not distribute that directory: it holds a runtime token. The installer does not register global agents or startup services. Uninstall by removing this server's configuration entry, closing the app, and deleting the extracted bundle.
+`MADCAT_HOME` can choose a separate local settings directory. The final directory must be a real directory, not a symlink or junction. On macOS/Linux it must belong to the current user and allow no group or other access (normally mode `0700`); token files are published atomically with mode `0600`. Parent directory aliases remain supported. On Windows, file modes do not enforce ACL privacy: a custom directory must inherit private ACLs accessible only to your account and trusted system administrators. Use a private location with trusted parent directories, never a shared folder. Do not distribute that directory: it holds a runtime token. The installer does not register global agents or startup services. Uninstall by removing this server's configuration entry, closing the app, and deleting the extracted bundle.
 
 ## Development
 
@@ -96,6 +100,6 @@ npm run check:art
 npm run test:gui
 ```
 
-The tests cover direction geometry, frame selection, reaction weighting and one-shot recovery, MCP protocol discovery, command validation, and loopback authentication. GUI smoke tests render the real artwork and exercise the local bridge. Creation source strips and prompts are included in the separate artwork source archive in Releases.
+The tests cover direction geometry, frame selection, reaction weighting and one-shot recovery, MCP protocol discovery, command validation, and loopback authentication. GUI smoke tests render the real artwork and exercise the local bridge. Each invocation keeps captures in a new private `runtime-smoke/mini-mad-cat-smoke-*` run folder and removes only that run's temporary app data. To choose a different existing output parent, use `npm run test:gui -- /path/to/output`; the test creates a fresh child there and never reuses an existing case folder. Use a private destination with trusted parent directories. Creation source strips and prompts are included in the separate artwork source archive in Releases.
 
 This is a fan-made MechWarrior/BattleTech-inspired companion. Code is MIT licensed. Artwork is provided for personal desktop-companion use; character and trademark rights remain with their respective owners. The project is not an official BattleTech or MechWarrior product.

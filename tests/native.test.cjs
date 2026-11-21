@@ -82,8 +82,12 @@ test('native wrappers include agent instructions and execute safely from a metac
   }
   const catalog = JSON.parse(fs.readFileSync(path.join(bundle, 'generated-native/.agents/plugins/marketplace.json'),'utf8'));
   assert.equal(catalog.plugins[0].source.path, './codex');
+  // Security regression: prepare() created this config above from our own
+  // templates in a new fixture. Running its shell command is intentional: it
+  // verifies quoting of spaces/metacharacters, not externally supplied commands.
   const config = JSON.parse(fs.readFileSync(path.join(bundle, 'generated-native/codex/hooks/codex.json'),'utf8'));
   const command = config.hooks.Stop[0].hooks[0][process.platform === 'win32' ? 'commandWindows' : 'command'];
+  // SystemRoot belongs to the trusted test-launcher environment, not hook input.
   const shell = process.platform === 'win32' ? path.join(process.env.SystemRoot,'System32/WindowsPowerShell/v1.0/powershell.exe') : '/bin/sh';
   const args = process.platform === 'win32' ? ['-NoProfile','-NonInteractive','-Command',command] : ['-c',command];
   const result = spawnSync(shell, args, { input:JSON.stringify({hook_event_name:'Stop'}), encoding:'utf8', timeout:5000, windowsHide:true });
