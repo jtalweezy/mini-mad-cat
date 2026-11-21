@@ -146,3 +146,55 @@ test('detects an installed Windows Cursor and creates settings on apply, not dis
   assert.ok(setup.apply(['cursor']).results[0].ok);
   assert.equal(JSON.parse(text(filename)).mcpServers['mini-mad-cat'].type, 'stdio');
 });
+
+function monitorProbes(t, forbidden) {
+  const rejected = [];
+  for (const name of ['lstatSync', 'statSync', 'accessSync', 'readdirSync']) {
+    const original = fs[name];
+    t.mock.method(fs, name, (filename, ...args) => {
+      if (typeof filename === 'string' && forbidden.test(filename)) {
+        rejected.push(filename);
+        throw new Error('Discovery attempted an out-of-scope probe.');
+      }
+      return original(filename, ...args);
+    });
+  }
+  return rejected;
+}
+
+test('rejects relative and out-of-profile configuration roots before probing them', t => {
+  const env = { CODEX_HOME: 'relative-madcat-override', CLAUDE_CONFIG_DIR: 'relative-madcat-override' };
+  const { setup, homeDir } = fixture(t, { env });
+  env.GROK_HOME = path.join(path.dirname(homeDir), 'external-madcat-override');
+  const rejected = monitorProbes(t, /(?:relative|external)-madcat-override/);
+  const hosts = statuses(setup);
+  for (const id of ['codex', 'claude-code', 'grok']) {
+    assert.equal(hosts[id].available, false);
+    assert.match(hosts[id].reason, /outside your home folder/);
+  }
+  assert.deepEqual(rejected, []);
+});
+
+test('Windows discovery does not contact UNC or device paths from app data or Path', t => {
+  const unc = String.raw`\\madcat-scan-avoid\share`;
+  const device = String.raw`\\?\GLOBALROOT\Device\madcat-scan-avoid`;
+  const env = { APPDATA: unc, LOCALAPPDATA: unc, Path: [unc, device, 'relative-madcat-scan-avoid'].join(path.delimiter) };
+  const { setup } = fixture(t, { env, platform: 'win32' });
+  const rejected = monitorProbes(t, /madcat-scan-avoid/);
+  const hosts = statuses(setup);
+  assert.match(hosts['claude-desktop'].reason, /outside your home folder/);
+  assert.equal(hosts.cursor.available, false);
+  assert.deepEqual(rejected, []);
+});
+
+test('follows a normal POSIX executable symlink during PATH discovery', { skip: process.platform === 'win32' }, t => {
+  const env = {};
+  const { setup, homeDir, write } = fixture(t, { env });
+  const executable = write('install/codex', '#!/bin/sh\nexit 0\n');
+  fs.chmodSync(executable, 0o700);
+  const bin = path.join(homeDir, 'local-bin');
+  fs.mkdirSync(bin, { mode: 0o700 });
+  fs.symlinkSync(executable, path.join(bin, 'codex'));
+  env.PATH = bin;
+  assert.equal(statuses(setup).codex.selected, true);
+});
