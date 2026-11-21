@@ -179,7 +179,7 @@ function configuration(platform, architecture, signed, electronArchive, nodeRunt
     publish: null,
     mac: {
       category: 'public.app-category.utilities',
-      minimumSystemVersion: '13.0',
+      minimumSystemVersion: '13.5',
       hardenedRuntime: true,
       entitlements: 'build/entitlements.mac.plist',
       entitlementsInherit: 'build/entitlements.mac.plist',
