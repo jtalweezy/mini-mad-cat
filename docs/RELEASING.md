@@ -17,7 +17,7 @@ The Windows workflow takes a PKCS#12 Authenticode identity with the configured S
 ## Build and verify
 
 1. Merge the reviewed changes to protected `main` and tag that commit `vX.Y.Z` using the version in `package.json`.
-2. Dispatch **Signed native packages** for that tag from `main`. Use the default unchecked **Publish verified packages** for a rehearsal. For a production run, check it so publication waits for approval in `release-publishing`.
+2. Dispatch **Signed native packages** for that tag from `main`. Select `all` for the three operating systems or `linux` for a signed Linux-only release. Use the default unchecked **Publish verified packages** for a rehearsal. For a production run, check it so publication waits for approval in `release-publishing`.
 3. Check the same run's verified artifact digests and test those signed files on the target desktop and any required endpoint security policy.
 4. Approve the waiting publication job after the checks pass. Each signing run can produce new hashes, so review the files from the run you approve.
 

@@ -31,4 +31,6 @@ On Ubuntu, use the `.deb` if system policy blocks the portable app's Chromium sa
 
 Check the download against the release's SHA-256 file. On Windows, you can inspect the **Digital Signatures** tab in the installer properties or run `Get-AuthenticodeSignature` in PowerShell. On macOS, the normal Gatekeeper check verifies the Developer ID and notarization. On Linux, verify the package with its matching detached `.asc` signature and the project's independently confirmed OpenPGP key. [Apple notarization](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution) · [Windows signing and reputation](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation)
 
+The Linux release key fingerprint is `B858 C27A AE6E 4A17 B9D1 F4A5 B726 7844 6A3F 8E77`. Check it with `gpg --show-keys --fingerprint mini-mad-cat-linux-signing-key.asc` before trusting the downloaded key.
+
 Endpoint products apply the policies set by the organization. To investigate a suspected false positive, give the endpoint administrator the original release file's SHA-256, signer, and detection ID so they can verify the exact artifact.
