@@ -1,0 +1,74 @@
+name: Native package checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  candidate:
+    name: Package (${{ matrix.platform }}, ${{ matrix.arch }})
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { platform: win32, arch: x64, runner: windows-2025 }
+          - { platform: win32, arch: arm64, runner: windows-11-arm }
+          - { platform: darwin, arch: x64, runner: macos-15-intel }
+          - { platform: darwin, arch: arm64, runner: macos-15 }
+          - { platform: linux, arch: x64, runner: ubuntu-24.04 }
+          - { platform: linux, arch: arm64, runner: ubuntu-24.04-arm }
+    runs-on: ${{ matrix.runner }}
+    env:
+      TARGET_PLATFORM: ${{ matrix.platform }}
+      TARGET_ARCH: ${{ matrix.arch }}
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24.22.3'
+          architecture: ${{ matrix.arch }}
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts
+      - run: npm run check:art
+      - name: Build native test package
+        shell: bash
+        run: npm run package -- --arch "$TARGET_ARCH"
+      - name: Verify bundled runtime and stage test artifacts
+        shell: bash
+        run: |
+          node .github/scripts/check-bundled-bridge.cjs dist/packages "$TARGET_ARCH"
+          node .github/scripts/package-artifacts.cjs stage "$TARGET_PLATFORM" "$TARGET_ARCH" dist/packages dist/candidate
+          node .github/scripts/package-artifacts.cjs checksum "$TARGET_PLATFORM" "$TARGET_ARCH" dist/candidate
+      - name: Exercise the setup window against a fixture profile
+        if: matrix.platform == 'win32' && matrix.arch == 'x64'
+        run: node scripts/smoke-setup.cjs
+      - name: Read Debian package metadata and list portable archive
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          deb_arch=amd64
+          if [ "$TARGET_ARCH" = arm64 ]; then deb_arch=arm64; fi
+          for package in dist/candidate/*.deb; do
+            test "$(dpkg-deb --field "$package" Architecture)" = "$deb_arch"
+            dpkg-deb --contents "$package" > /dev/null
+          done
+          for package in dist/candidate/*.tar.gz; do
+            tar -tzf "$package" > /dev/null
+          done
+      - name: Store unsigned CI-only packages
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unsigned-test-${{ matrix.platform }}-${{ matrix.arch }}
+          path: dist/candidate/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 3
