@@ -5,9 +5,12 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { manifest, STATES, directionForOffset, animationCell, lookCell, clampPosition } = require('../lib/atlas.cjs');
 const { dataDirectory } = require('../lib/paths.cjs');
+const { ensurePrivateDirectory, writeEndpoint } = require('../lib/endpoint-file.cjs');
 const { validateCommand } = require('../lib/commands.cjs');
 const { createControlServer } = require('../lib/control-server.cjs');
 const { createReactionController } = require('../lib/reactions.cjs');
+const { TRACKING_MODES, createTrackingController } = require('../lib/tracking.cjs');
+const { CAPTURE_TIMES, captureRequest, captureTarget, writeCapture } = require('../lib/capture-output.cjs');
 const reactionPolicy = require('../config/reactions.json');
 const reactionController = createReactionController(reactionPolicy);
 const LAYOUT = { width: 512, height: 400, petX: 160, petY: 180, petWidth: 192, petHeight: 208 };
@@ -16,18 +19,18 @@ app.setName('Mini Mad Cat');
 // This small transparent canvas needs no GPU. Software compositing also keeps
 // hidden own-window captures consistent on Windows display scaling setups.
 app.disableHardwareAcceleration();
-const dataDir = dataDirectory();
-fs.mkdirSync(dataDir, { recursive: true, mode: 0o700 });
+const dataDir = ensurePrivateDirectory(dataDirectory());
 app.setPath('userData', dataDir);
 if (!app.requestSingleInstanceLock()) { app.quit(); }
 else {
   let window, tray, control, interval, saveTimer;
-  let preferences = { scale: 1, followCursor: false, clickThrough: false, reducedMotion: false, contextBubbles: true, position: null };
+  let preferences = { scale: 1, followCursor: false, trackingMode: 'always', clickThrough: false, reducedMotion: false, contextBubbles: true, position: null };
   let manual = null, currentState = 'idle', stateStarted = Date.now(), drag = null;
   let latestFrame = null, lastPosition = null, mouseIgnored = null;
+  let renderedCell = { row: 0, column: 0 };
   const alphaFrames = new Map();
   const hidden = process.argv.includes('--hidden');
-  const captureArg = process.argv.find(arg => arg.startsWith('--capture='));
+  const capture = captureRequest(process.argv);
   const settingsPath = path.join(dataDir, 'settings.json');
   const endpointPath = path.join(dataDir, 'control.json');
   const htmlUrl = pathToFileURL(path.join(__dirname, 'index.html')).href;
@@ -38,9 +41,11 @@ else {
     const saved = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
     if (Number.isFinite(saved.scale) && saved.scale >= .5 && saved.scale <= 2) preferences.scale = saved.scale;
     for (const key of ['followCursor', 'clickThrough', 'reducedMotion', 'contextBubbles']) if (typeof saved[key] === 'boolean') preferences[key] = saved[key];
+    if (TRACKING_MODES.includes(saved.trackingMode)) preferences.trackingMode = saved.trackingMode;
     if (saved.position && Number.isFinite(saved.position.x) && Number.isFinite(saved.position.y)) preferences.position = saved.position;
   } catch {}
   if (!cursorTracking) { preferences.followCursor = false; preferences.clickThrough = true; }
+  const tracking = createTrackingController({ mode: preferences.trackingMode });
 
   function saveSettingsSoon() {
     clearTimeout(saveTimer);
@@ -54,7 +59,7 @@ else {
   }
   function status() {
     const position = window && !window.isDestroyed() ? window.getPosition() : null;
-    return { name: manifest.name, version: '1.0.0', state: currentState, temporaryState: manual?.state || null, preferences: { ...preferences, position:position?{x:position[0],y:position[1]}:null }, capabilities: { cursorTracking, followCursor: cursorTracking, transparentOverlay: true, effects:fs.existsSync(path.join(__dirname,'../assets/effects.png')), linuxSession: wayland ? 'Wayland-limited' : null } };
+    return { name: manifest.name, version: app.getVersion(), state: currentState, temporaryState: manual?.state || null, preferences: { ...preferences, position:position?{x:position[0],y:position[1]}:null }, tracking: { ...tracking.status(), active:tracking.behavior({available:cursorTracking}).active }, capabilities: { cursorTracking, followCursor: cursorTracking, transparentOverlay: true, effects:fs.existsSync(path.join(__dirname,'../assets/effects.png')), linuxSession: wayland ? 'Wayland-limited' : null } };
   }
   function setAnimation(state, durationMs = 7000, once = false, holdMs = 0, holdFrame = null) {
     manual = state === 'idle' ? null : { state, until: Date.now() + durationMs, once, holdMs, holdFrame };
@@ -64,6 +69,10 @@ else {
     if (values.followCursor !== undefined) {
       if (values.followCursor && !cursorTracking) throw new Error('Cursor tracking is unavailable in native Wayland. Use an X11 session or --ozone-platform=x11 where X11 is available.');
       preferences.followCursor = values.followCursor;
+    }
+    if (values.trackingMode !== undefined) {
+      preferences.trackingMode = values.trackingMode;
+      tracking.setMode(values.trackingMode);
     }
     if (values.clickThrough !== undefined) preferences.clickThrough = values.clickThrough;
     if (values.scale !== undefined) {
@@ -95,6 +104,11 @@ else {
       { label: 'Mini Mad Cat', enabled: false },
       { label: 'Animation', submenu: STATES.map(state => ({ label: state, click: () => setAnimation(state) })) },
       { type: 'separator' },
+      { label: 'Mouse tracking', submenu: [
+        { label: 'Always', mode: 'always' },
+        { label: '15 seconds after click', mode: 'after-click' },
+        { label: 'Off', mode: 'off' }
+      ].map(item => ({ label:item.label, type:'radio', checked:preferences.trackingMode===item.mode, enabled:cursorTracking||item.mode==='off', click:()=>applyPreferences({trackingMode:item.mode}) })) },
       { label: 'Follow cursor', type: 'checkbox', checked: preferences.followCursor, enabled: cursorTracking, click: item => applyPreferences({ followCursor: item.checked }) },
       { label: 'Click through', type: 'checkbox', checked: preferences.clickThrough, click: item => applyPreferences({ clickThrough: item.checked }) },
       { label: 'Reduced motion', type: 'checkbox', checked: preferences.reducedMotion, click: item => applyPreferences({ reducedMotion: item.checked }) },
@@ -115,6 +129,14 @@ else {
     const image = nativeImage.createFromPath(art);
     const imageSize = image.getSize();
     if (imageSize.width !== manifest.width || imageSize.height !== manifest.height) { dialog.showErrorBox('Invalid Mini Mad Cat artwork', 'The v2 sprite sheet must be exactly 1536 by 2288 pixels.'); app.quit(); return; }
+    function alphaAtCursor(cursor, x, y, cell = renderedCell) {
+      const localX=Math.floor((cursor.x-x)/preferences.scale)-LAYOUT.petX;
+      const localY=Math.floor((cursor.y-y)/preferences.scale)-LAYOUT.petY;
+      if(localX<0||localX>=192||localY<0||localY>=208)return 0;
+      const key=cell.row+':'+cell.column;
+      if(!alphaFrames.has(key))alphaFrames.set(key,image.crop({x:cell.column*192,y:cell.row*208,width:192,height:208}).toBitmap());
+      return alphaFrames.get(key)[(localY*192+localX)*4+3];
+    }
     window = new BrowserWindow({
       width: Math.round(LAYOUT.width * preferences.scale), height: Math.round(LAYOUT.height * preferences.scale),
       frame: false, transparent: true, backgroundColor: '#00000000', hasShadow: false,
@@ -133,11 +155,19 @@ else {
     if (!hidden) window.showInactive();
     window.on('move', saveSettingsSoon);
     bindIpc('pet:drag-start', () => {
-      if (!cursorTracking) return;
+      if (!cursorTracking || preferences.clickThrough) return;
       const cursor = screen.getCursorScreenPoint(); const [x,y] = window.getPosition();
+      if (alphaAtCursor(cursor,x,y)<24) return;
+      tracking.notePrimaryInteraction();
       drag = { dx: cursor.x-x, dy: cursor.y-y };
     });
-    bindIpc('pet:drag-end', () => { drag = null; saveSettingsSoon(); });
+    bindIpc('pet:drag-end', () => {
+      if (!drag) return;
+      // Renew once when a click or deliberate drag finishes, never on pointer
+      // movement or duplicate pointer-up/lost-capture notifications.
+      tracking.notePrimaryInteraction();
+      drag = null; saveSettingsSoon();
+    });
     bindIpc('pet:wave', () => setAnimation('waving', 880, true));
     bindIpc('pet:menu', () => Menu.buildFromTemplate(menuTemplate()).popup({ window }));
     try {
@@ -160,18 +190,19 @@ else {
       if (command.action === 'quit') setTimeout(() => app.quit(), 100);
       return status();
     }});
-    fs.writeFileSync(endpointPath, JSON.stringify({ port:control.port, token:control.token, pid:process.pid, version:1 }), { mode:0o600 });
+    writeEndpoint(dataDir, { port:control.port, token:control.token, pid:process.pid, version:1 });
     interval = setInterval(() => {
       if (!window || window.isDestroyed()) return;
       const now = Date.now();
       let [x,y] = window.getPosition(); const [width,height] = window.getSize();
       let moving = false;
       const cursor = cursorTracking ? screen.getCursorScreenPoint() : null;
+      const pointerBehavior = tracking.behavior({available:cursorTracking,followCursor:preferences.followCursor,dragging:!!drag});
       if (drag && cursor) {
         const area = screen.getDisplayNearestPoint(cursor).workArea;
         const pos = clampPosition(cursor.x-drag.dx, cursor.y-drag.dy, width,height,area);
         window.setPosition(pos.x,pos.y); x=pos.x; y=pos.y; moving = true;
-      } else if (preferences.followCursor && cursor) {
+      } else if (pointerBehavior.chase && cursor) {
         const area = screen.getDisplayNearestPoint(cursor).workArea;
         const target = clampPosition(cursor.x-(LAYOUT.petX+LAYOUT.petWidth*.75)*preferences.scale, cursor.y+40-LAYOUT.petY*preferences.scale, width,height,area);
         const dx=target.x-x, dy=target.y-y, distance=Math.hypot(dx,dy);
@@ -188,40 +219,35 @@ else {
         if(elapsed>pauseAt)elapsed=elapsed<pauseAt+manual.holdMs?pauseAt:elapsed-manual.holdMs;
       }
       let cell = animationCell(currentState, preferences.reducedMotion ? 0 : elapsed, {loop:!manual?.once});
-      if (!manual && !moving && currentState === 'idle' && cursor) {
+      if (!manual && !moving && currentState === 'idle' && pointerBehavior.gaze && cursor) {
         const direction = directionForOffset(cursor.x-(x+(LAYOUT.petX+96)*preferences.scale),cursor.y-(y+(LAYOUT.petY+208*.46)*preferences.scale),60*preferences.scale);
         if (direction !== null) cell = lookCell(direction);
       }
       if (cursor) {
-        const localX=Math.floor((cursor.x-x)/preferences.scale)-LAYOUT.petX;
-        const localY=Math.floor((cursor.y-y)/preferences.scale)-LAYOUT.petY;
-        const key=cell.row+':'+cell.column;
-        if(!alphaFrames.has(key))alphaFrames.set(key,image.crop({x:cell.column*192,y:cell.row*208,width:192,height:208}).toBitmap());
-        const alpha=localX>=0&&localX<192&&localY>=0&&localY<208?alphaFrames.get(key)[(localY*192+localX)*4+3]:0;
+        const alpha=alphaAtCursor(cursor,x,y,cell);
         const shouldIgnore=preferences.clickThrough || (!drag && alpha<24);
         if(mouseIgnored!==shouldIgnore){window.setIgnoreMouseEvents(shouldIgnore,{forward:true});mouseIgnored=shouldIgnore;}
       }
+      renderedCell = cell;
       const serial = `${cell.row}:${cell.column}:${currentState}`;
       if (serial !== latestFrame) { latestFrame = serial; window.webContents.send('pet:frame', { ...cell, state:currentState }); }
     }, 1000/30);
-    if (captureArg) {
-      const output=path.resolve(captureArg.slice('--capture='.length));
-      const series=process.argv.includes('--capture-series');
-      const captureTimes=series?[200,500,900,1400,2100,2800]:[1200];
+    if (capture) {
+      const captureTimes=capture.series?CAPTURE_TIMES:[1200];
       for(const delay of captureTimes)setTimeout(async()=>{
         try {
-          fs.mkdirSync(path.dirname(output),{recursive:true});
+          fs.mkdirSync(capture.directory,{recursive:true,mode:0o700});
           const rendererSnapshot=await window.webContents.executeJavaScript('({frame,reaction,now:performance.now(),visibility:document.visibilityState})');
           const shot=hidden?await new Promise((resolve,reject)=>{
             const timeout=setTimeout(()=>{window.webContents.removeListener('paint',paint);reject(new Error('Offscreen renderer paint timed out'));},2000);
             function paint(_event,_dirty,image){clearTimeout(timeout);resolve(image);}
             window.webContents.once('paint',paint);window.webContents.invalidate();
           }):await window.webContents.capturePage();
-          const target=series?output.replace(/\.png$/i,'')+'-'+String(delay).padStart(4,'0')+'.png':output;
-          fs.writeFileSync(target,shot.toPNG());
+          const target=captureTarget(capture,delay);
+          writeCapture(target,shot.toPNG());
           const bitmap=shot.toBitmap();const dimensions=shot.getSize();const ratio=dimensions.width/(LAYOUT.width*preferences.scale);let visiblePixels=0,petPixels=0;
           for(let py=0;py<dimensions.height;py++)for(let px=0;px<dimensions.width;px++)if(bitmap[(py*dimensions.width+px)*4+3]>0){visiblePixels++;if(px>=LAYOUT.petX*preferences.scale*ratio&&px<(LAYOUT.petX+192)*preferences.scale*ratio&&py>=LAYOUT.petY*preferences.scale*ratio&&py<(LAYOUT.petY+208)*preferences.scale*ratio)petPixels++;}
-          fs.writeFileSync(target+'.json',JSON.stringify({width:dimensions.width,height:dimensions.height,logicalWidth:LAYOUT.width*preferences.scale,logicalHeight:LAYOUT.height*preferences.scale,visiblePixels,petPixels,captureMethod:hidden?'offscreen-paint':'capturePage',state:currentState,frame:latestFrame,renderer:rendererSnapshot,preferences:{reducedMotion:preferences.reducedMotion}},null,2));
+          writeCapture(target+'.json',JSON.stringify({width:dimensions.width,height:dimensions.height,logicalWidth:LAYOUT.width*preferences.scale,logicalHeight:LAYOUT.height*preferences.scale,visiblePixels,petPixels,captureMethod:hidden?'offscreen-paint':'capturePage',state:currentState,frame:latestFrame,renderer:rendererSnapshot,preferences:{reducedMotion:preferences.reducedMotion}},null,2));
           console.error('Captured companion preview:',target);
         }catch(error){console.error('Capture failed:',error.message);}
       },delay);

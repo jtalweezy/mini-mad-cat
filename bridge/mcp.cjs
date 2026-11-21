@@ -4,7 +4,8 @@ const {tools,commandForTool}=require('./tools.cjs');
 const {requestCompanion}=require('../lib/control-client.cjs');
 const versions=['2025-11-25','2025-06-18','2025-03-26','2024-11-05'];
 const modernVersion='2026-07-28';
-const serverInfo={name:'mini-mad-cat',version:'1.0.0'};
+const { version } = require('../package.json');
+const serverInfo = { name: 'mini-mad-cat', version };
 function response(id,result){process.stdout.write(JSON.stringify({jsonrpc:'2.0',id,result})+'\n');}
 function error(id,code,message,data){process.stdout.write(JSON.stringify({jsonrpc:'2.0',id,error:{code,message,...(data?{data}:{})}})+'\n');}
 async function route(message){

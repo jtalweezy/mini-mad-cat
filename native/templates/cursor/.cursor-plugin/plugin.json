@@ -1,6 +1,6 @@
 {
   "name": "mini-mad-cat",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Animated mech companion with a local MCP bridge and passive outcome hooks.",
   "mcpServers": "./mcp.json",
   "hooks": "./hooks/cursor.json"
