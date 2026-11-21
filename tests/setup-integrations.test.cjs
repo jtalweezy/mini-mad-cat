@@ -87,6 +87,30 @@ test('deselects Grok Build even when it imports Cursor or Claude Code configurat
   assert.deepEqual(JSON.parse(text(claude)).mcpServers, {});
 });
 
+test('keeps Grok disconnected when removal from an upstream host fails', t => {
+  const { setup, write } = fixture(t);
+  const cursor = write('.cursor/mcp.json', '{}\n');
+  const grok = write('.grok/config.toml', '# existing settings\n');
+  assert.ok(setup.apply(['cursor']).results.every(result => result.ok));
+  const connectedCursor = text(cursor);
+  const disabledGrok = text(grok);
+  assert.ok(JSON.parse(connectedCursor).mcpServers['mini-mad-cat']);
+  assert.equal(parse(disabledGrok).mcp_servers['mini-mad-cat'].enabled, false);
+
+  const malformedCursor = connectedCursor + '\n{';
+  fs.writeFileSync(cursor, malformedCursor);
+  const failed = setup.apply([]).results;
+  assert.equal(failed.find(result => result.id === 'cursor').ok, false);
+  assert.deepEqual(failed.find(result => result.id === 'grok'), { id: 'grok', ok: true, changed: false });
+  assert.equal(text(cursor), malformedCursor);
+  assert.equal(text(grok), disabledGrok);
+  assert.equal(statuses(setup).grok.connected, false);
+
+  fs.writeFileSync(cursor, connectedCursor);
+  assert.ok(setup.apply([]).results.every(result => result.ok && result.changed));
+  assert.equal(text(grok), '# existing settings\n');
+});
+
 test('leaves conflicting, malformed and ambiguous files untouched and still applies other selections', t => {
   const { setup, write } = fixture(t);
   const wrong = '{"mcpServers":{"mini-mad-cat":{"command":"different"}}}\n';
