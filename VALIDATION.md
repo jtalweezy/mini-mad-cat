@@ -1,8 +1,17 @@
 # Validation record
 
+## Version 1.0.2
+
+- On Windows, 33 unit tests passed and three platform-specific tests skipped. All four artwork files matched their recorded SHA-256 values and dimensions.
+- The desktop Electron renderer exercised click-to-track at 100% and 150% scale, multiple stationary torso directions, expiry at 10 seconds, both directional gaits, upward thrust, the downward crouch hold, manual reaction priority, and reduced motion. The input probe used an isolated cursor simulation.
+- The regenerated core atlas keeps the original Codex idle pixels and six other original animation rows. Each of the 16 torso-aim poses keeps its foot centers within 2.5 px of the approved forward stance. The Pets structural preflight passed all 73 cells. Its separate silhouette heuristic flagged the intentional space between the planted legs. An independent alpha flood fill confirmed every flagged pixel was connected to the outside of its cell.
+- In live Windows client tests, Claude Desktop and Cursor sent successful missile reactions and failure knockdown/recovery reactions to the companion. macOS, Windows and Linux run the automated suite in CI. The macOS desktop UI still needs a live host check.
+
+## Version 1.0.0
+
 Checked November 20, 2026, on Windows with Node 24.14.0 and Electron 45.4.1.
 
-## Executed checks
+### Executed checks
 
 - Locked dependency installation completed. First Electron launch also downloads its platform binary when needed; installation and first launch require network access.
 - `npm test`: **12 tests passed**, covering frame geometry/timing, one-shot recovery, reaction weights/cooldown/reduced motion, MCP discovery, command validation, loopback authentication, and native hook/wrapper integration.
@@ -12,7 +21,7 @@ Checked November 20, 2026, on Windows with Node 24.14.0 and Electron 45.4.1.
 - The hidden-window test uses Electron offscreen rendering for reliable captures. The normal companion uses a regular transparent window. Pixel checks confirm real artwork and transparent background in the captures.
 - Claude-compatible generated wrappers passed `claude plugin validate --strict` on Claude Code 2.1.330; the missing optional directory icon was a warning. This is component validation, not marketplace admission or installation in every host.
 
-## Artwork checks
+### Artwork checks
 
 The final core PNG is 1536×2288 RGBA, 2,705,382 bytes, with 73 populated v2 cells and 15 unused transparent cells. It passed the bundled Pets structural and quality scripts, state inspection, chroma cleanup, direction continuity review, three isolated blind direction reviews, and the Pets MCP service preflight. The jump lifts 60 pixels and returns to the idle baseline. The failure row visibly falls, braces, kneels, and stands again.
 
@@ -32,7 +41,7 @@ d6bd6f782e61f84162d71e7fb7a260ef8db175db973264a603d662f300486f43
 
 The final direction review accepted small near-cardinal aiming subtleties and minor continuity metrics after inspection; it has no failed cardinal or structural gate. Source geometry revisions and generation prompts are preserved in the artwork source archive.
 
-## Scope
+### Scope
 
 Windows rendering, local MCP delivery, reaction recovery, authentication, and reduced-motion behavior were exercised. The test did not move or click the user's cursor. Native dragging, tray/right-click interaction, real pointer following, multi-monitor interaction, and macOS/Linux desktop behavior still need target-machine verification. Direction and position calculations are unit tested.
 

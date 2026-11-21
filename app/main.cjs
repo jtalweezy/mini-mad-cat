@@ -11,6 +11,7 @@ const { createControlServer } = require('../lib/control-server.cjs');
 const { createReactionController } = require('../lib/reactions.cjs');
 const { DEFAULT_TRACKING_MODE, TRACKING_MODES, TRACKING_WINDOW_MS, createTrackingController } = require('../lib/tracking.cjs');
 const { CAPTURE_TIMES, captureRequest, captureTarget, writeCapture } = require('../lib/capture-output.cjs');
+const { mobility, classifyMotion, canChase, travelVisual } = require('../lib/mobility.cjs');
 const reactionPolicy = require('../config/reactions.json');
 const reactionController = createReactionController(reactionPolicy);
 const LAYOUT = { width: 512, height: 400, petX: 160, petY: 180, petWidth: 192, petHeight: 208 };
@@ -26,8 +27,10 @@ else {
   let window, tray, control, interval, saveTimer;
   let preferences = { scale: 1, followCursor: false, trackingMode: DEFAULT_TRACKING_MODE, clickThrough: false, reducedMotion: false, contextBubbles: true, position: null };
   let manual = null, currentState = 'idle', stateStarted = Date.now(), drag = null;
-  let latestFrame = null, lastPosition = null, mouseIgnored = null;
-  let renderedCell = { row: 0, column: 0 };
+  let latestFrame = null, mouseIgnored = null;
+  let renderedCell = { row: 0, column: 0, sheet: 'core' };
+  let motionMode = null, motionStarted = Date.now(), thrustActive = false;
+  const optionalAssets = { mobility: false, thrust: false };
   const alphaFrames = new Map();
   const hidden = process.argv.includes('--hidden');
   const capture = captureRequest(process.argv);
@@ -59,7 +62,7 @@ else {
   }
   function status() {
     const position = window && !window.isDestroyed() ? window.getPosition() : null;
-    return { name: manifest.name, version: app.getVersion(), state: currentState, temporaryState: manual?.state || null, preferences: { ...preferences, position:position?{x:position[0],y:position[1]}:null }, tracking: { ...tracking.status(), active:tracking.behavior({available:cursorTracking}).active }, capabilities: { cursorTracking, followCursor: cursorTracking, transparentOverlay: true, effects:fs.existsSync(path.join(__dirname,'../assets/effects.png')), linuxSession: wayland ? 'Wayland-limited' : null } };
+    return { name: manifest.name, version: app.getVersion(), state: currentState, motion: { mode:motionMode, thrust:thrustActive }, temporaryState: manual?.state || null, preferences: { ...preferences, position:position?{x:position[0],y:position[1]}:null }, tracking: { ...tracking.status(), active:tracking.behavior({available:cursorTracking}).active }, capabilities: { cursorTracking, followCursor: cursorTracking, transparentOverlay: true, mobility:optionalAssets.mobility, thrust:optionalAssets.thrust, effects:fs.existsSync(path.join(__dirname,'../assets/effects.png')), linuxSession: wayland ? 'Wayland-limited' : null } };
   }
   function setAnimation(state, durationMs = 7000, once = false, holdMs = 0, holdFrame = null) {
     manual = state === 'idle' ? null : { state, until: Date.now() + durationMs, once, holdMs, holdFrame };
@@ -129,12 +132,22 @@ else {
     const image = nativeImage.createFromPath(art);
     const imageSize = image.getSize();
     if (imageSize.width !== manifest.width || imageSize.height !== manifest.height) { dialog.showErrorBox('Invalid Mini Mad Cat artwork', 'The v2 sprite sheet must be exactly 1536 by 2288 pixels.'); app.quit(); return; }
+    function optionalImage(filename, width, height) {
+      const file = path.join(__dirname, '..', 'assets', filename);
+      if (!fs.existsSync(file)) return null;
+      const candidate = nativeImage.createFromPath(file), size = candidate.getSize();
+      return size.width === width && size.height === height ? candidate : null;
+    }
+    const spriteImages = { core:image, mobility:optionalImage(mobility.sheet,mobility.width,mobility.height) };
+    optionalAssets.mobility = !!spriteImages.mobility;
+    optionalAssets.thrust = !!optionalImage(mobility.thrust.sheet,mobility.thrust.width,mobility.thrust.height);
     function alphaAtCursor(cursor, x, y, cell = renderedCell) {
       const localX=Math.floor((cursor.x-x)/preferences.scale)-LAYOUT.petX;
       const localY=Math.floor((cursor.y-y)/preferences.scale)-LAYOUT.petY;
       if(localX<0||localX>=192||localY<0||localY>=208)return 0;
-      const key=cell.row+':'+cell.column;
-      if(!alphaFrames.has(key))alphaFrames.set(key,image.crop({x:cell.column*192,y:cell.row*208,width:192,height:208}).toBitmap());
+      const sheet = cell.sheet === 'mobility' && spriteImages.mobility ? 'mobility' : 'core';
+      const key=sheet+':'+cell.row+':'+cell.column;
+      if(!alphaFrames.has(key))alphaFrames.set(key,spriteImages[sheet].crop({x:cell.column*192,y:cell.row*208,width:192,height:208}).toBitmap());
       return alphaFrames.get(key)[(localY*192+localX)*4+3];
     }
     window = new BrowserWindow({
@@ -195,33 +208,36 @@ else {
       if (!window || window.isDestroyed()) return;
       const now = Date.now();
       let [x,y] = window.getPosition(); const [width,height] = window.getSize();
-      let moving = false;
+      const originX = x, originY = y;
+      if (manual && now >= manual.until) manual = null;
       const cursor = cursorTracking ? screen.getCursorScreenPoint() : null;
       const pointerBehavior = tracking.behavior({available:cursorTracking,followCursor:preferences.followCursor,dragging:!!drag});
       if (drag && cursor) {
         const area = screen.getDisplayNearestPoint(cursor).workArea;
         const pos = clampPosition(cursor.x-drag.dx, cursor.y-drag.dy, width,height,area);
-        window.setPosition(pos.x,pos.y); x=pos.x; y=pos.y; moving = true;
-      } else if (pointerBehavior.chase && cursor) {
+        window.setPosition(pos.x,pos.y); x=pos.x; y=pos.y;
+      } else if (canChase({trackingAllowsChase:pointerBehavior.chase,manualActive:!!manual,dragging:!!drag}) && cursor) {
         const area = screen.getDisplayNearestPoint(cursor).workArea;
         const target = clampPosition(cursor.x-(LAYOUT.petX+LAYOUT.petWidth*.75)*preferences.scale, cursor.y+40-LAYOUT.petY*preferences.scale, width,height,area);
         const dx=target.x-x, dy=target.y-y, distance=Math.hypot(dx,dy);
-        if (distance > 10) { const step=Math.min(distance,4); x=Math.round(x+dx/distance*step); y=Math.round(y+dy/distance*step); window.setPosition(x,y); moving=true; }
+        if (distance > 10) { const step=Math.min(distance,4); x=Math.round(x+dx/distance*step); y=Math.round(y+dy/distance*step); window.setPosition(x,y); }
       }
-      if (manual && now >= manual.until) manual = null;
+      const moving = x !== originX || y !== originY;
+      const nextMotion = manual ? null : classifyMotion(x-originX,y-originY,motionMode);
+      if (nextMotion !== motionMode) { motionMode = nextMotion; motionStarted = now; if (!manual) stateStarted = now; }
       let desiredState = manual?.state || 'idle';
-      if (moving && !manual) desiredState = (lastPosition && x < lastPosition.x) ? 'running-left' : 'running-right';
+      if (motionMode) desiredState = mobility.modes[motionMode]?.fallbackState || motionMode;
       if (desiredState !== currentState) { currentState = desiredState; stateStarted = now; }
-      lastPosition = {x,y};
       let elapsed=now-stateStarted;
       if(manual?.once&&manual.holdMs&&manual.holdFrame!==null){
         const pauseAt=manifest.states[currentState].durations.slice(0,manual.holdFrame).reduce((sum,value)=>sum+value,0);
         if(elapsed>pauseAt)elapsed=elapsed<pauseAt+manual.holdMs?pauseAt:elapsed-manual.holdMs;
       }
-      let cell = animationCell(currentState, preferences.reducedMotion ? 0 : elapsed, {loop:!manual?.once});
+      let cell = { ...animationCell(currentState, preferences.reducedMotion ? 0 : elapsed, {loop:!manual?.once}), sheet:'core', motion:null, thrust:false, reducedMotion:preferences.reducedMotion };
+      if (motionMode) cell = travelVisual(motionMode,now-motionStarted,{mobilityAvailable:optionalAssets.mobility,thrustAvailable:optionalAssets.thrust,reducedMotion:preferences.reducedMotion});
       if (!manual && !moving && currentState === 'idle' && pointerBehavior.gaze && cursor) {
         const direction = directionForOffset(cursor.x-(x+(LAYOUT.petX+96)*preferences.scale),cursor.y-(y+(LAYOUT.petY+208*.46)*preferences.scale),60*preferences.scale);
-        if (direction !== null) cell = lookCell(direction);
+        if (direction !== null) cell = { ...cell, ...lookCell(direction) };
       }
       if (cursor) {
         const alpha=alphaAtCursor(cursor,x,y,cell);
@@ -229,7 +245,8 @@ else {
         if(mouseIgnored!==shouldIgnore){window.setIgnoreMouseEvents(shouldIgnore,{forward:true});mouseIgnored=shouldIgnore;}
       }
       renderedCell = cell;
-      const serial = `${cell.row}:${cell.column}:${currentState}`;
+      thrustActive = cell.thrust;
+      const serial = `${cell.sheet}:${cell.row}:${cell.column}:${currentState}:${cell.motion}:${cell.thrust}:${cell.thrustSpec?.column}:${cell.reducedMotion}`;
       if (serial !== latestFrame) { latestFrame = serial; window.webContents.send('pet:frame', { ...cell, state:currentState }); }
     }, 1000/30);
     if (capture) {

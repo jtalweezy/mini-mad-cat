@@ -1,0 +1,102 @@
+{
+  "sheet": "mobility.png",
+  "width": 1152,
+  "height": 416,
+  "columns": 6,
+  "rows": 2,
+  "cellWidth": 192,
+  "cellHeight": 208,
+  "modes": {
+    "jumpjet": {
+      "row": 0,
+      "durations": [
+        120,
+        120,
+        140,
+        120,
+        120
+      ],
+      "fallbackState": "jumping"
+    },
+    "crouch": {
+      "row": 1,
+      "durations": [
+        140,
+        140,
+        140,
+        140,
+        140,
+        140
+      ],
+      "fallbackState": "waiting",
+      "loop": false
+    }
+  },
+  "thrust": {
+    "sheet": "thrust.png",
+    "width": 768,
+    "height": 208,
+    "columns": 4,
+    "rows": 1,
+    "frameDurationMs": 90,
+    "sourceAnchor": {
+      "x": 96,
+      "y": 55
+    },
+    "scale": 0.44,
+    "attachments": [
+      [
+        {
+          "x": 70,
+          "y": 142
+        },
+        {
+          "x": 120,
+          "y": 142
+        }
+      ],
+      [
+        {
+          "x": 68,
+          "y": 154
+        },
+        {
+          "x": 120,
+          "y": 154
+        }
+      ],
+      [
+        {
+          "x": 68,
+          "y": 158
+        },
+        {
+          "x": 121,
+          "y": 158
+        }
+      ],
+      [
+        {
+          "x": 70,
+          "y": 154
+        },
+        {
+          "x": 121,
+          "y": 153
+        }
+      ],
+      [
+        {
+          "x": 70,
+          "y": 142
+        },
+        {
+          "x": 120,
+          "y": 142
+        }
+      ]
+    ],
+    "sha256": "e41deedf792ebcc8fb41be31c362a7de86b27366e51aa6b9bca53852b02fa39b"
+  },
+  "sha256": "c95bca607a4e3ce4b4d817c28871fe193beaaf334b3ea362fd230aaf63e9599d"
+}
