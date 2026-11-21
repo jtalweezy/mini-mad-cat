@@ -12,7 +12,7 @@ In the repository's GitHub Actions settings, create `release-signing` and `relea
 | macOS | `CSC_LINK`, `CSC_KEY_PASSWORD`, `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD` | `APPLE_TEAM_ID` |
 | Linux | `LINUX_SIGNING_KEY`, `LINUX_SIGNING_PASSPHRASE` | `LINUX_SIGNING_FINGERPRINT` |
 
-Use a trusted Authenticode signing identity with the configured SHA-256 certificate fingerprint. For macOS direct distribution, use an Apple Developer ID Application certificate and the corresponding notarization account. Publish your Linux OpenPGP public key through a channel where users can confirm its fingerprint independently. [Windows signing documentation](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation) · [Apple Developer ID and notarization](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution)
+The Windows workflow takes a PKCS#12 Authenticode identity with the configured SHA-256 certificate fingerprint. Providers that keep the signing key in a cloud service or hardware token require a compatible signing adapter. For macOS direct distribution, use an Apple Developer ID Application certificate and the corresponding notarization account. Publish your Linux OpenPGP public key through a channel where users can confirm its fingerprint independently. [Windows signing documentation](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation) · [Apple Developer ID and notarization](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution)
 
 ## Build and verify
 
