@@ -4,6 +4,7 @@
   "private": true,
   "description": "Local Mini Mad Cat desktop companion and MCP bridge",
   "homepage": "https://github.com/jtalweezy/mini-mad-cat",
+  "desktopName": "mini-mad-cat.desktop",
   "author": "Mini Mad Cat contributors",
   "license": "MIT",
   "main": "app/main.cjs",

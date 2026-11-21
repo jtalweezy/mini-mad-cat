@@ -123,12 +123,12 @@ function signInputs(platform, signed) {
   if (missing.length) throw new Error(`Required signing credentials are missing: ${missing.join(', ')}`);
 }
 
-function configuration(platform, signed, electronArchive, nodeRuntime, bridge) {
+function configuration(platform, architecture, signed, electronArchive, nodeRuntime, bridge) {
   return {
     appId: 'io.github.jtalweezy.mini-mad-cat',
     productName: 'Mini Mad Cat',
     executableName: 'mini-mad-cat',
-    artifactName: `mini-mad-cat-\${version}-${platform}-\${arch}.\${ext}`,
+    artifactName: `mini-mad-cat-\${version}-${platform}-${architecture}.\${ext}`,
     directories: { output: outputDirectory, buildResources: 'build' },
     files: ['app/**/*', 'lib/**/*', 'assets/**/*', 'config/*.json', 'package.json', 'LICENSE'],
     extraResources: [
@@ -172,7 +172,8 @@ function configuration(platform, signed, electronArchive, nodeRuntime, bridge) {
     win: { signAndEditExecutable: true },
     linux: {
       category: 'Utility',
-      maintainer: 'Mini Mad Cat maintainers <34728823+jtalweezy@users.noreply.github.com>'
+      maintainer: 'Mini Mad Cat maintainers <34728823+jtalweezy@users.noreply.github.com>',
+      syncDesktopName: true
     }
   };
 }
@@ -220,7 +221,7 @@ async function main() {
     const bridge = await stageBridge(staging);
     const built = await build({
       projectDir: project,
-      config: configuration(platform, values.signed, electronArchive, nodeRuntime, bridge),
+      config: configuration(platform, architecture, values.signed, electronArchive, nodeRuntime, bridge),
       targets: Platform.current().createTarget(values.unpacked ? ['dir'] : targets[platform], Arch[architecture]),
       publish: 'never'
     });
