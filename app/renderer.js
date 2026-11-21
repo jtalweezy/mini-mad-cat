@@ -2,10 +2,18 @@
 const canvas=document.getElementById('pet');
 const context=canvas.getContext('2d');
 const image=new Image();
+const mobilityImage=new Image();
+mobilityImage.onload=()=>render();mobilityImage.src='../assets/mobility.png';
 let frame={row:0,column:0,state:'idle'};
-function render(){if(!image.complete||!image.naturalWidth)return;context.clearRect(0,0,192,208);context.drawImage(image,frame.column*192,frame.row*208,192,208,0,0,192,208);}
+function render(){
+  if(!image.complete||!image.naturalWidth)return;
+  const useMobility=frame.sheet==='mobility'&&mobilityImage.complete&&mobilityImage.naturalWidth;
+  const source=useMobility?mobilityImage:image;
+  const cell=frame.sheet==='mobility'&&!useMobility?(frame.fallback||{row:0,column:0}):frame;
+  context.clearRect(0,0,192,208);context.drawImage(source,cell.column*192,cell.row*208,192,208,0,0,192,208);
+}
 image.onload=render;image.src='../assets/spritesheet.png';
-window.madcat.onFrame(value=>{if(Number.isInteger(value.row)&&value.row>=0&&value.row<11&&Number.isInteger(value.column)&&value.column>=0&&value.column<8){frame=value;render();}});
+window.madcat.onFrame(value=>{const optional=value.sheet==='mobility';if(Number.isInteger(value.row)&&value.row>=0&&value.row<(optional?2:11)&&Number.isInteger(value.column)&&value.column>=0&&value.column<(optional?6:8)){frame=value;render();}});
 canvas.addEventListener('pointerdown',event=>{if(event.button===0){canvas.setPointerCapture(event.pointerId);window.madcat.startDrag();}});
 canvas.addEventListener('pointerup',()=>window.madcat.endDrag());
 canvas.addEventListener('lostpointercapture',()=>window.madcat.endDrag());
@@ -14,9 +22,21 @@ canvas.addEventListener('contextmenu',event=>{event.preventDefault();window.madc
 window.addEventListener('blur',()=>window.madcat.endDrag());
 const effectsCanvas=document.getElementById('effects');const fxContext=effectsCanvas.getContext('2d');
 const effectsImage=new Image();effectsImage.src='../assets/effects.png';
+const thrustImage=new Image();thrustImage.src='../assets/thrust.png';
+let reducedMotion=false;
 const bubble=document.getElementById('bubble');let reaction=null;
+function drawThrust(){
+  const spec=frame.thrustSpec;
+  if(reducedMotion||frame.reducedMotion||!frame.thrust||frame.motion!=='jumpjet'||!spec||!thrustImage.complete||!thrustImage.naturalWidth)return;
+  if(!Number.isInteger(spec.column)||spec.column<0||spec.column>=4)return;
+  for(const attachment of spec.attachments){
+    fxContext.save();fxContext.translate(160+attachment.x,180+attachment.y);fxContext.scale(spec.scale,spec.scale);
+    fxContext.drawImage(thrustImage,spec.column*192,0,192,208,-spec.sourceAnchor.x,-spec.sourceAnchor.y,192,208);fxContext.restore();
+  }
+}
 function drawEffect(now){
   fxContext.clearRect(0,0,512,400);
+  drawThrust();
   if(!reaction)return;
   const elapsed=now-reaction.started;const progress=elapsed/reaction.durationMs;
   if(progress>=1){reaction=null;bubble.hidden=true;return;}
@@ -47,6 +67,7 @@ window.madcat.onReaction(value=>{
   drawEffect(performance.now());
 });
 window.madcat.onPreferences(value=>{
+  reducedMotion=value.reducedMotion===true;
   if(value.reducedMotion&&reaction)reaction.effect=null;
   bubble.hidden=value.contextBubbles===false||!reaction||!bubble.textContent;
 });
