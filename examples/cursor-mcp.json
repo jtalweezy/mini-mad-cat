@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "mini-mad-cat": {
+      "type": "stdio",
+      "command": "/ABS/PATH/TO/node",
+      "args": ["/ABS/BUNDLE/bridge/mcp.cjs"]
+    }
+  }
+}

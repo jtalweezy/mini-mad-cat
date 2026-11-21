@@ -1,0 +1,973 @@
+{
+  "ok": true,
+  "frames_root": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames",
+  "states": [
+    "idle",
+    "running-right",
+    "running-left",
+    "waving",
+    "jumping",
+    "failed",
+    "waiting",
+    "running",
+    "review"
+  ],
+  "errors": [],
+  "warnings": [],
+  "rows": [
+    {
+      "state": "idle",
+      "expected_frames": 6,
+      "actual_frames": 6,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\idle\\00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12812,
+          "bbox": [
+            32,
+            53,
+            158,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 311
+        },
+        {
+          "index": 1,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\idle\\01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13058,
+          "bbox": [
+            32,
+            48,
+            158,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 251
+        },
+        {
+          "index": 2,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\idle\\02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13370,
+          "bbox": [
+            32,
+            46,
+            159,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 315
+        },
+        {
+          "index": 3,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\idle\\03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12796,
+          "bbox": [
+            32,
+            53,
+            158,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 291
+        },
+        {
+          "index": 4,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\idle\\04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12899,
+          "bbox": [
+            32,
+            51,
+            158,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 268
+        },
+        {
+          "index": 5,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\idle\\05.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12939,
+          "bbox": [
+            32,
+            53,
+            158,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 262
+        }
+      ]
+    },
+    {
+      "state": "running-right",
+      "expected_frames": 8,
+      "actual_frames": 8,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-right\\00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10921,
+          "bbox": [
+            35,
+            58,
+            156,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 380
+        },
+        {
+          "index": 1,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-right\\01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9946,
+          "bbox": [
+            35,
+            57,
+            156,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 322
+        },
+        {
+          "index": 2,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-right\\02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9518,
+          "bbox": [
+            34,
+            46,
+            156,
+            191
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 280
+        },
+        {
+          "index": 3,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-right\\03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10248,
+          "bbox": [
+            34,
+            56,
+            156,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 318
+        },
+        {
+          "index": 4,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-right\\04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9475,
+          "bbox": [
+            35,
+            60,
+            156,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 251
+        },
+        {
+          "index": 5,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-right\\05.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9504,
+          "bbox": [
+            34,
+            57,
+            156,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 286
+        },
+        {
+          "index": 6,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-right\\06.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9553,
+          "bbox": [
+            34,
+            46,
+            158,
+            183
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 293
+        },
+        {
+          "index": 7,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-right\\07.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10473,
+          "bbox": [
+            30,
+            58,
+            162,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 320
+        }
+      ]
+    },
+    {
+      "state": "running-left",
+      "expected_frames": 8,
+      "actual_frames": 8,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-left\\00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10917,
+          "bbox": [
+            35,
+            58,
+            156,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 369
+        },
+        {
+          "index": 1,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-left\\01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9968,
+          "bbox": [
+            35,
+            57,
+            156,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 321
+        },
+        {
+          "index": 2,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-left\\02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9502,
+          "bbox": [
+            34,
+            46,
+            156,
+            191
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 272
+        },
+        {
+          "index": 3,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-left\\03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10228,
+          "bbox": [
+            34,
+            56,
+            156,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 316
+        },
+        {
+          "index": 4,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-left\\04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9474,
+          "bbox": [
+            35,
+            60,
+            156,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 264
+        },
+        {
+          "index": 5,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-left\\05.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9502,
+          "bbox": [
+            34,
+            57,
+            156,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 293
+        },
+        {
+          "index": 6,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-left\\06.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 9562,
+          "bbox": [
+            34,
+            46,
+            158,
+            182
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 297
+        },
+        {
+          "index": 7,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running-left\\07.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10497,
+          "bbox": [
+            30,
+            58,
+            162,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 312
+        }
+      ]
+    },
+    {
+      "state": "waving",
+      "expected_frames": 4,
+      "actual_frames": 4,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\waving\\00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12964,
+          "bbox": [
+            29,
+            54,
+            162,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 202
+        },
+        {
+          "index": 1,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\waving\\01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12684,
+          "bbox": [
+            26,
+            54,
+            165,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 209
+        },
+        {
+          "index": 2,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\waving\\02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12586,
+          "bbox": [
+            26,
+            54,
+            164,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 179
+        },
+        {
+          "index": 3,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\waving\\03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12733,
+          "bbox": [
+            27,
+            54,
+            164,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 156
+        }
+      ]
+    },
+    {
+      "state": "jumping",
+      "expected_frames": 5,
+      "actual_frames": 5,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\jumping\\00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13801,
+          "bbox": [
+            24,
+            62,
+            167,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 241
+        },
+        {
+          "index": 1,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\jumping\\01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13476,
+          "bbox": [
+            24,
+            36,
+            167,
+            190
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 254
+        },
+        {
+          "index": 2,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\jumping\\02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12726,
+          "bbox": [
+            25,
+            5,
+            166,
+            145
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 246
+        },
+        {
+          "index": 3,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\jumping\\03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13521,
+          "bbox": [
+            24,
+            31,
+            167,
+            187
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 259
+        },
+        {
+          "index": 4,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\jumping\\04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13703,
+          "bbox": [
+            24,
+            54,
+            166,
+            203
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 253
+        }
+      ]
+    },
+    {
+      "state": "failed",
+      "expected_frames": 8,
+      "actual_frames": 8,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\failed\\00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12771,
+          "bbox": [
+            33,
+            51,
+            159,
+            202
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 350
+        },
+        {
+          "index": 1,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\failed\\01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11014,
+          "bbox": [
+            26,
+            44,
+            165,
+            202
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 291
+        },
+        {
+          "index": 2,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\failed\\02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10597,
+          "bbox": [
+            28,
+            57,
+            164,
+            201
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 329
+        },
+        {
+          "index": 3,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\failed\\03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10447,
+          "bbox": [
+            22,
+            97,
+            170,
+            202
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 261
+        },
+        {
+          "index": 4,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\failed\\04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 10664,
+          "bbox": [
+            25,
+            73,
+            167,
+            202
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 293
+        },
+        {
+          "index": 5,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\failed\\05.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11206,
+          "bbox": [
+            30,
+            74,
+            161,
+            202
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 310
+        },
+        {
+          "index": 6,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\failed\\06.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 11721,
+          "bbox": [
+            35,
+            63,
+            157,
+            202
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 327
+        },
+        {
+          "index": 7,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\failed\\07.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 12632,
+          "bbox": [
+            34,
+            51,
+            158,
+            202
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 343
+        }
+      ]
+    },
+    {
+      "state": "waiting",
+      "expected_frames": 6,
+      "actual_frames": 6,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\waiting\\00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13566,
+          "bbox": [
+            33,
+            47,
+            159,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 285
+        },
+        {
+          "index": 1,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\waiting\\01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13204,
+          "bbox": [
+            32,
+            45,
+            159,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 280
+        },
+        {
+          "index": 2,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\waiting\\02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13258,
+          "bbox": [
+            31,
+            43,
+            160,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 287
+        },
+        {
+          "index": 3,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\waiting\\03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13222,
+          "bbox": [
+            31,
+            43,
+            161,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 252
+        },
+        {
+          "index": 4,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\waiting\\04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13191,
+          "bbox": [
+            32,
+            45,
+            159,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 276
+        },
+        {
+          "index": 5,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\waiting\\05.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13408,
+          "bbox": [
+            33,
+            48,
+            158,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 294
+        }
+      ]
+    },
+    {
+      "state": "running",
+      "expected_frames": 6,
+      "actual_frames": 6,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running\\00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13499,
+          "bbox": [
+            33,
+            47,
+            158,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 261
+        },
+        {
+          "index": 1,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running\\01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13069,
+          "bbox": [
+            34,
+            43,
+            157,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 242
+        },
+        {
+          "index": 2,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running\\02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13360,
+          "bbox": [
+            34,
+            47,
+            157,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 236
+        },
+        {
+          "index": 3,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running\\03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13099,
+          "bbox": [
+            34,
+            43,
+            158,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 253
+        },
+        {
+          "index": 4,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running\\04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13341,
+          "bbox": [
+            34,
+            47,
+            157,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 256
+        },
+        {
+          "index": 5,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\running\\05.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13319,
+          "bbox": [
+            34,
+            47,
+            157,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 225
+        }
+      ]
+    },
+    {
+      "state": "review",
+      "expected_frames": 6,
+      "actual_frames": 6,
+      "extraction_method": "components",
+      "ok": true,
+      "errors": [],
+      "warnings": [],
+      "frames": [
+        {
+          "index": 0,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\review\\00.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13221,
+          "bbox": [
+            36,
+            47,
+            156,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 296
+        },
+        {
+          "index": 1,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\review\\01.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13171,
+          "bbox": [
+            36,
+            47,
+            155,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 285
+        },
+        {
+          "index": 2,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\review\\02.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13132,
+          "bbox": [
+            36,
+            47,
+            155,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 242
+        },
+        {
+          "index": 3,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\review\\03.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13145,
+          "bbox": [
+            36,
+            47,
+            155,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 280
+        },
+        {
+          "index": 4,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\review\\04.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13075,
+          "bbox": [
+            36,
+            47,
+            155,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 268
+        },
+        {
+          "index": 5,
+          "file": "${CREATION_ROOT}\\work\\mini-mad-cat\\qa\\release-frames\\review\\05.png",
+          "width": 192,
+          "height": 208,
+          "nontransparent_pixels": 13099,
+          "bbox": [
+            36,
+            47,
+            156,
+            204
+          ],
+          "edge_pixels": 0,
+          "chroma_adjacent_pixels": 285
+        }
+      ]
+    }
+  ]
+}

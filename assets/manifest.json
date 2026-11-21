@@ -1,0 +1,25 @@
+{
+  "name": "Mini Mad Cat",
+  "description": "A pocket-sized Mad Cat mech copilot for your next MechWarrior build.",
+  "spriteVersionNumber": 2,
+  "sha256": "602f46b75ecdb6137d3660f24ceb4778065cf5dabb16ff7eaec5485dd89c8b56",
+  "sheet": "spritesheet.png",
+  "width": 1536,
+  "height": 2288,
+  "cellWidth": 192,
+  "cellHeight": 208,
+  "columns": 8,
+  "rows": 11,
+  "states": {
+    "idle": { "row": 0, "durations": [280,110,110,140,140,320] },
+    "running-right": { "row": 1, "durations": [120,120,120,120,120,120,120,220] },
+    "running-left": { "row": 2, "durations": [120,120,120,120,120,120,120,220] },
+    "waving": { "row": 3, "durations": [140,140,140,280] },
+    "jumping": { "row": 4, "durations": [140,140,140,140,280] },
+    "failed": { "row": 5, "durations": [140,140,140,140,140,140,140,240] },
+    "waiting": { "row": 6, "durations": [150,150,150,150,150,260] },
+    "running": { "row": 7, "durations": [120,120,120,120,120,220] },
+    "review": { "row": 8, "durations": [150,150,150,150,150,280] }
+  },
+  "look": { "firstRow": 9, "directions": [0,22.5,45,67.5,90,112.5,135,157.5,180,202.5,225,247.5,270,292.5,315,337.5] }
+}

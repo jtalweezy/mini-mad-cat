@@ -1,0 +1,8 @@
+{
+  "hooks": {
+    "SessionStart": [{"hooks":[{"type":"command","command":"__NODE_EXECUTABLE__","args":["__BUNDLE_ROOT__/bridge/hook.cjs","claude"],"timeout":2,"async":true}]}],
+    "Stop": [{"hooks":[{"type":"command","command":"__NODE_EXECUTABLE__","args":["__BUNDLE_ROOT__/bridge/hook.cjs","claude"],"timeout":2,"async":true}]}],
+    "StopFailure": [{"hooks":[{"type":"command","command":"__NODE_EXECUTABLE__","args":["__BUNDLE_ROOT__/bridge/hook.cjs","claude"],"timeout":2,"async":true}]}],
+    "PostToolUseFailure": [{"hooks":[{"type":"command","command":"__NODE_EXECUTABLE__","args":["__BUNDLE_ROOT__/bridge/hook.cjs","claude"],"timeout":2,"async":true}]}]
+  }
+}

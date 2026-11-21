@@ -1,0 +1,9 @@
+{
+  "hooks": {
+    "SessionStart": [{"hooks":[{"type":"command","command":"__HOOK_COMMAND_CURRENT__","timeout":2}]}],
+    "Stop": [{"hooks":[{"type":"command","command":"__HOOK_COMMAND_CURRENT__","timeout":2}]}],
+    "StopFailure": [{"hooks":[{"type":"command","command":"__HOOK_COMMAND_CURRENT__","timeout":2}]}],
+    "PostToolUseFailure": [{"hooks":[{"type":"command","command":"__HOOK_COMMAND_CURRENT__","timeout":2}]}],
+    "PermissionDenied": [{"hooks":[{"type":"command","command":"__HOOK_COMMAND_CURRENT__","timeout":2}]}]
+  }
+}

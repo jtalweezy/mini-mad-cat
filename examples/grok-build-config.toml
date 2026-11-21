@@ -1,0 +1,3 @@
+[mcp_servers.mini-mad-cat]
+command = "/ABS/PATH/TO/node"
+args = ["/ABS/BUNDLE/bridge/mcp.cjs"]

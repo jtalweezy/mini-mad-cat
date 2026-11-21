@@ -1,0 +1,14 @@
+{
+  "name": "mini-mad-cat",
+  "version": "1.0.0",
+  "description": "Animated mech companion with a local MCP bridge and passive outcome hooks.",
+  "author": {"name":"Mini Mad Cat contributors"},
+  "network": {"hosts":["127.0.0.1"]},
+  "mcpServers": {
+    "mini-mad-cat": {
+      "command": "__NODE_EXECUTABLE__",
+      "args": ["__BUNDLE_ROOT__/bridge/mcp.cjs"]
+    }
+  },
+  "hooks": "./hooks/grok.json"
+}

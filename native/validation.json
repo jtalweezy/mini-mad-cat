@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "command": "node native/validate.cjs",
+  "integrationTests": 3,
+  "platform": "win32",
+  "node": "v24.14.0",
+  "scope": [
+    "coarse event mapping",
+    "actual passive hook delivery and chat privacy",
+    "malformed and oversized input fail-open",
+    "native paths and copied instructions",
+    "shell metacharacter path execution"
+  ],
+  "globalConfigurationChanged": false
+}

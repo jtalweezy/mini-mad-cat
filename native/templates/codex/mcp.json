@@ -1,0 +1,10 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "mini-mad-cat": {
+      "type": "stdio",
+      "command": "__NODE_EXECUTABLE__",
+      "args": ["__BUNDLE_ROOT__/bridge/mcp.cjs"]
+    }
+  }
+}

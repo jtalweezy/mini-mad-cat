@@ -1,0 +1,17 @@
+{
+  "name": "mini-mad-cat-companion",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local Mini Mad Cat desktop companion and MCP bridge",
+  "main": "app/main.cjs",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test tests/*.test.cjs",
+    "test:gui": "node scripts/smoke.cjs",
+    "check:art": "node scripts/check-art.cjs",
+    "mcp": "node bridge/mcp.cjs",
+    "config": "node scripts/print-config.cjs"
+  },
+  "devDependencies": { "electron": "45.4.1" }
+}

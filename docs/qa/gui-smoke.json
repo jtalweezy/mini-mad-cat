@@ -1,0 +1,52 @@
+{
+  "ok": true,
+  "platform": "win32",
+  "node": "v24.14.0",
+  "electron": "45.4.1",
+  "cases": [
+    {
+      "name": "high-success",
+      "ok": true,
+      "outcome": "success",
+      "effect": "missiles",
+      "score": 1,
+      "reducedMotion": false,
+      "recoveredState": "idle",
+      "temporaryState": null,
+      "captures": 6
+    },
+    {
+      "name": "medium-success",
+      "ok": true,
+      "outcome": "success",
+      "effect": "laser",
+      "score": 0.64,
+      "reducedMotion": false,
+      "recoveredState": "idle",
+      "temporaryState": null,
+      "captures": 6
+    },
+    {
+      "name": "failure",
+      "ok": true,
+      "outcome": "failure",
+      "effect": "explosion",
+      "score": 1,
+      "reducedMotion": false,
+      "recoveredState": "idle",
+      "temporaryState": null,
+      "captures": 6
+    },
+    {
+      "name": "reduced-motion",
+      "ok": true,
+      "outcome": "success",
+      "effect": null,
+      "score": 1,
+      "reducedMotion": true,
+      "recoveredState": "idle",
+      "temporaryState": null,
+      "captures": 6
+    }
+  ]
+}

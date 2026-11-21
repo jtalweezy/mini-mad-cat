@@ -1,0 +1,9 @@
+{
+  "hooks": {
+    "SessionStart": [{"hooks":[{"type":"command","command":"__HOOK_COMMAND_POSIX__","commandWindows":"__HOOK_COMMAND_WINDOWS__","timeout":2,"async":true}]}],
+    "Stop": [{"hooks":[{"type":"command","command":"__HOOK_COMMAND_POSIX__","commandWindows":"__HOOK_COMMAND_WINDOWS__","timeout":2,"async":true}]}],
+    "PostModelRequest": [{"hooks":[{"type":"command","command":"__HOOK_COMMAND_POSIX__","commandWindows":"__HOOK_COMMAND_WINDOWS__","timeout":2,"async":true}]}],
+    "PostToolUse": [{"hooks":[{"type":"command","command":"__HOOK_COMMAND_POSIX__","commandWindows":"__HOOK_COMMAND_WINDOWS__","timeout":2,"async":true}]}],
+    "Interrupt": [{"hooks":[{"type":"command","command":"__HOOK_COMMAND_POSIX__","commandWindows":"__HOOK_COMMAND_WINDOWS__","timeout":2}]}]
+  }
+}

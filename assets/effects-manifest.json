@@ -1,0 +1,24 @@
+{
+  "sheet": "effects.png",
+  "width": 768,
+  "height": 624,
+  "columns": 4,
+  "rows": 3,
+  "cellWidth": 192,
+  "cellHeight": 208,
+  "effects": {
+    "laser": {
+      "row": 0,
+      "frames": 4
+    },
+    "missiles": {
+      "row": 1,
+      "frames": 4
+    },
+    "explosion": {
+      "row": 2,
+      "frames": 4
+    }
+  },
+  "sha256": "d6bd6f782e61f84162d71e7fb7a260ef8db175db973264a603d662f300486f43"
+}

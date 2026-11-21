@@ -1,0 +1,13 @@
+{
+  "cooldownMs": 2500,
+  "successWeights": { "impact": 0.6, "confidence": 0.4 },
+  "failureWeights": { "severity": 0.55, "impact": 0.3, "confidence": 0.15 },
+  "thresholds": { "laser": 0.55, "missiles": 0.8 },
+  "bubbles": {
+    "successSmall": "OBJECTIVE SECURED",
+    "successLarge": "ENEMY DESTROYED",
+    "failure": "SYSTEM FAILURE — RECOVERING",
+    "partial": "RECALIBRATING",
+    "blocked": "HOLDING FOR ORDERS"
+  }
+}

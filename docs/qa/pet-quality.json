@@ -1,0 +1,73 @@
+{
+  "ok": true,
+  "atlas": "${CREATION_ROOT}\\work\\mini-mad-cat\\final\\spritesheet-release.png",
+  "encoded_bytes": 2705382,
+  "sha256": "602f46b75ecdb6137d3660f24ceb4778065cf5dabb16ff7eaec5485dd89c8b56",
+  "jump": {
+    "idle_baseline": 202,
+    "jump_baselines": [
+      202,
+      188,
+      142,
+      185,
+      202
+    ],
+    "airborne_lift_pixels": 60,
+    "landing_delta_pixels": 0
+  },
+  "look_registration": {
+    "neutral_center_x": 95.0,
+    "look_centers_x": [
+      95.0,
+      94.5,
+      98.0,
+      101.5,
+      103.0,
+      102.0,
+      99.0,
+      97.0,
+      94.5,
+      96.5,
+      95.5,
+      91.0,
+      90.5,
+      90.5,
+      96.0,
+      97.5
+    ],
+    "look_widths": [
+      102,
+      105,
+      114,
+      113,
+      112,
+      108,
+      98,
+      94,
+      105,
+      101,
+      105,
+      106,
+      105,
+      105,
+      106,
+      95
+    ],
+    "maximum_center_drift_pixels": 8.0,
+    "maximum_width_ratio": 1.2127659574468086
+  },
+  "errors": [],
+  "warnings": [
+    "look direction 022.5 accepted with a reviewed warning",
+    "look direction 112.5 accepted with a reviewed warning",
+    "look direction 157.5 accepted with a reviewed warning",
+    "look direction 202.5 accepted with a reviewed warning",
+    "look direction 337.5 accepted with a reviewed warning",
+    "157.5 has transparent interior hole rows (y=67)",
+    "180 has transparent interior hole rows (y=65, y=66)",
+    "202.5 has transparent interior hole rows (y=65)",
+    "157.5->180 diff is a local outlier (3043 pixels vs neighbor average 1650)",
+    "157.5->180 sprite area ratio is high (1.16)",
+    "337.5->000 diff is a local outlier (2540 pixels vs neighbor average 1430)"
+  ]
+}

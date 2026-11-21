@@ -1,0 +1,325 @@
+{
+  "source": "generated strips; bundled extract_component_frames",
+  "layout": {
+    "width": 768,
+    "height": 624,
+    "columns": 4,
+    "rows": 3,
+    "cellWidth": 192,
+    "cellHeight": 208
+  },
+  "rows": [
+    {
+      "effect": "laser",
+      "row": 0,
+      "source": "${CREATION_ROOT}\\work\\mini-mad-cat\\decoded\\fx\\laser.png",
+      "source_size": [
+        2172,
+        724
+      ],
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "transparent_fraction": 0.9355852487205315,
+      "component_groups": [
+        [
+          54,
+          325,
+          507,
+          392
+        ],
+        [
+          583,
+          315,
+          1053,
+          401
+        ],
+        [
+          1114,
+          301,
+          1606,
+          414
+        ],
+        [
+          1673,
+          320,
+          2132,
+          397
+        ]
+      ],
+      "transform": "one shared row scale from bundled extractor; translations only to effect anchor",
+      "frames": [
+        {
+          "index": 0,
+          "bounds": [
+            5,
+            92,
+            171,
+            117
+          ],
+          "translation": [
+            -8,
+            0
+          ],
+          "path": "${CREATION_ROOT}\\work\\mini-mad-cat\\decoded\\fx\\frames\\laser\\00.png",
+          "visible_pixels": 1495
+        },
+        {
+          "index": 1,
+          "bounds": [
+            5,
+            88,
+            177,
+            120
+          ],
+          "translation": [
+            -5,
+            0
+          ],
+          "path": "${CREATION_ROOT}\\work\\mini-mad-cat\\decoded\\fx\\frames\\laser\\01.png",
+          "visible_pixels": 2716
+        },
+        {
+          "index": 2,
+          "bounds": [
+            5,
+            83,
+            185,
+            125
+          ],
+          "translation": [
+            -1,
+            0
+          ],
+          "path": "${CREATION_ROOT}\\work\\mini-mad-cat\\decoded\\fx\\frames\\laser\\02.png",
+          "visible_pixels": 4077
+        },
+        {
+          "index": 3,
+          "bounds": [
+            5,
+            90,
+            173,
+            119
+          ],
+          "translation": [
+            -7,
+            0
+          ],
+          "path": "${CREATION_ROOT}\\work\\mini-mad-cat\\decoded\\fx\\frames\\laser\\03.png",
+          "visible_pixels": 2050
+        }
+      ]
+    },
+    {
+      "effect": "missiles",
+      "row": 1,
+      "source": "${CREATION_ROOT}\\work\\mini-mad-cat\\decoded\\fx\\missiles.png",
+      "source_size": [
+        2172,
+        724
+      ],
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "transparent_fraction": 0.8777840521758595,
+      "component_groups": [
+        [
+          74,
+          277,
+          461,
+          455
+        ],
+        [
+          545,
+          277,
+          1033,
+          455
+        ],
+        [
+          1123,
+          277,
+          1575,
+          455
+        ],
+        [
+          1721,
+          277,
+          2111,
+          455
+        ]
+      ],
+      "transform": "one shared row scale from bundled extractor; translations only to effect anchor",
+      "frames": [
+        {
+          "index": 0,
+          "bounds": [
+            45,
+            71,
+            187,
+            137
+          ],
+          "translation": [
+            20,
+            0
+          ],
+          "path": "${CREATION_ROOT}\\work\\mini-mad-cat\\decoded\\fx\\frames\\missiles\\00.png",
+          "visible_pixels": 4859
+        },
+        {
+          "index": 1,
+          "bounds": [
+            7,
+            71,
+            187,
+            137
+          ],
+          "translation": [
+            1,
+            0
+          ],
+          "path": "${CREATION_ROOT}\\work\\mini-mad-cat\\decoded\\fx\\frames\\missiles\\01.png",
+          "visible_pixels": 5843
+        },
+        {
+          "index": 2,
+          "bounds": [
+            21,
+            71,
+            187,
+            137
+          ],
+          "translation": [
+            8,
+            0
+          ],
+          "path": "${CREATION_ROOT}\\work\\mini-mad-cat\\decoded\\fx\\frames\\missiles\\02.png",
+          "visible_pixels": 5455
+        },
+        {
+          "index": 3,
+          "bounds": [
+            43,
+            71,
+            187,
+            137
+          ],
+          "translation": [
+            19,
+            0
+          ],
+          "path": "${CREATION_ROOT}\\work\\mini-mad-cat\\decoded\\fx\\frames\\missiles\\03.png",
+          "visible_pixels": 4869
+        }
+      ]
+    },
+    {
+      "effect": "explosion",
+      "row": 2,
+      "source": "${CREATION_ROOT}\\work\\mini-mad-cat\\decoded\\fx\\explosion.png",
+      "source_size": [
+        2170,
+        725
+      ],
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "transparent_fraction": 0.6622405847767361,
+      "component_groups": [
+        [
+          116,
+          280,
+          329,
+          488
+        ],
+        [
+          446,
+          155,
+          921,
+          595
+        ],
+        [
+          966,
+          33,
+          1650,
+          692
+        ],
+        [
+          1725,
+          216,
+          2071,
+          535
+        ]
+      ],
+      "transform": "one shared row scale from bundled extractor; translations only to effect anchor",
+      "frames": [
+        {
+          "index": 0,
+          "bounds": [
+            67,
+            76,
+            124,
+            132
+          ],
+          "translation": [
+            0,
+            -5
+          ],
+          "path": "${CREATION_ROOT}\\work\\mini-mad-cat\\decoded\\fx\\frames\\explosion\\00.png",
+          "visible_pixels": 2341
+        },
+        {
+          "index": 1,
+          "bounds": [
+            33,
+            46,
+            159,
+            162
+          ],
+          "translation": [
+            0,
+            -3
+          ],
+          "path": "${CREATION_ROOT}\\work\\mini-mad-cat\\decoded\\fx\\frames\\explosion\\01.png",
+          "visible_pixels": 10335
+        },
+        {
+          "index": 2,
+          "bounds": [
+            6,
+            17,
+            186,
+            190
+          ],
+          "translation": [
+            0,
+            0
+          ],
+          "path": "${CREATION_ROOT}\\work\\mini-mad-cat\\decoded\\fx\\frames\\explosion\\02.png",
+          "visible_pixels": 17526
+        },
+        {
+          "index": 3,
+          "bounds": [
+            50,
+            62,
+            142,
+            146
+          ],
+          "translation": [
+            0,
+            -3
+          ],
+          "path": "${CREATION_ROOT}\\work\\mini-mad-cat\\decoded\\fx\\frames\\explosion\\03.png",
+          "visible_pixels": 5683
+        }
+      ]
+    }
+  ],
+  "output": "${CREATION_ROOT}\\work\\mini-mad-cat-plugin\\assets\\effects.png",
+  "encoded_bytes": 157312,
+  "ok": true
+}

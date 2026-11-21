@@ -1,0 +1,6 @@
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:transparent;user-select:none}
+#pet{position:absolute;left:31.25%;top:45%;display:block;width:37.5%;height:52%;cursor:grab;touch-action:none}
+#pet:active{cursor:grabbing}
+#effects{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#bubble{position:absolute;left:20%;top:24%;width:60%;box-sizing:border-box;padding:8px 10px;border:1px solid #9ba86a;border-radius:7px;background:#172117ed;color:#dcf0a5;font:600 clamp(9px,2.3vw,16px)/1.25 monospace;text-align:center;overflow-wrap:anywhere;pointer-events:none}
+#bubble[hidden]{display:none}
