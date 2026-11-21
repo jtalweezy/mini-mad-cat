@@ -1,0 +1,47 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  color: #edf5f3;
+  background: #10191f;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 660px; margin: 0 auto; padding: 24px 30px 22px; }
+header { display: flex; align-items: center; gap: 14px; margin-bottom: 25px; }
+header p { margin: 6px 0 0; color: #adc0c6; line-height: 1.4; }
+h1 { font-size: 27px; margin: 0; letter-spacing: -.02em; }
+.pet {
+  width: 77px;
+  height: 84px;
+  flex: 0 0 77px;
+  border: 1px solid #314851;
+  border-radius: 12px;
+  background: #1a282f url("../assets/spritesheet.png") no-repeat 0 -8px / 616px 916px;
+}
+
+fieldset { padding: 0; margin: 0; border: 0; min-width: 0; }
+legend { font-weight: 650; padding: 0; }
+#summary { color: #adc0c6; font-size: .875rem; margin: 4px 0 12px; }
+#apps { border: 1px solid #304650; border-radius: 11px; overflow: hidden; }
+#apps:empty { display: none; }
+.app-row { padding: 12px 15px; display: flex; align-items: center; gap: 13px; background: #17262d; }
+.app-row + .app-row { border-top: 1px solid #2a3c44; }
+.app-row:has(:enabled):hover { background: #20333b; cursor: pointer; }
+.app-row:has(:disabled) { color: #a4b2b8; }
+.app-name { display: block; font-weight: 620; }
+.app-detail { display: block; color: #adc0c6; font-size: .83rem; margin-top: 3px; line-height: 1.35; }
+input { margin: 0; width: 17px; height: 17px; accent-color: #63e4e6; flex: 0 0 17px; }
+#status { color: #ffe1aa; font-size: .875rem; margin: 12px 0; white-space: pre-line; }
+#status:empty { display: none; }
+footer { margin-top: 18px; }
+footer p { font-size: .82rem; color: #adc0c6; margin: 0 0 12px; }
+.actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 9px; }
+button {
+  background: transparent; color: inherit; border: 1px solid #4a626c;
+  border-radius: 7px; font: inherit; font-size: .87rem; font-weight: 650; padding: 9px 13px;
+}
+button[type=submit] { background: #63e4e6; color: #12242a; border-color: #63e4e6; }
+button:enabled { cursor: pointer; }
+button:disabled { opacity: .55; }
+:focus-visible { outline: 2px solid #a0f1f0; outline-offset: 3px; }
