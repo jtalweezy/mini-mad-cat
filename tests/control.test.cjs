@@ -27,6 +27,18 @@ test('invalid endpoint cannot redirect token to a remote hostname',async()=>{
   }finally{await fs.rm(directory,{recursive:true,force:true});}
 });
 
+test('Windows endpoint discovery accepts alternate directory casing without weakening containment',async t=>{
+  if(process.platform!=='win32'){t.skip('Windows filesystem path alias regression');return;}
+  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'madcat-case-test-'));
+  const control=await createControlServer({getStatus:()=>({state:'idle'}),execute:()=>({ok:true})});
+  try{
+    await fs.writeFile(path.join(directory,'control.json'),JSON.stringify({port:control.port,token:control.token}));
+    const alias=directory.toUpperCase();
+    assert.equal((await fs.lstat(alias)).isDirectory(),true);
+    assert.deepEqual(await requestCompanion(null,{directory:alias}),{state:'idle'});
+  }finally{await control.close();await fs.rm(directory,{recursive:true,force:true});}
+});
+
 test('local companion redirects are rejected without forwarding the bearer token',async()=>{
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'madcat-test-'));
   let forwarded=0;
