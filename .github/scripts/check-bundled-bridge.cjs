@@ -9,8 +9,8 @@ const outputDirectory = path.join(__dirname, '..', '..', 'dist', 'packages');
 const resourceLocations = {
   'win32-x64': ['win-unpacked', 'resources'],
   'win32-arm64': ['win-arm64-unpacked', 'resources'],
-  'darwin-x64': ['mac', 'Mini Mad Cat.app', 'Contents', 'Resources'],
-  'darwin-arm64': ['mac-arm64', 'Mini Mad Cat.app', 'Contents', 'Resources'],
+  'darwin-x64': ['mac', 'mini-mad-cat.app', 'Contents', 'Resources'],
+  'darwin-arm64': ['mac-arm64', 'mini-mad-cat.app', 'Contents', 'Resources'],
   'linux-x64': ['linux-unpacked', 'resources'],
   'linux-arm64': ['linux-arm64-unpacked', 'resources']
 };
