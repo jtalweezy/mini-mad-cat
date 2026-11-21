@@ -1,11 +1,11 @@
 # Install Mini Mad Cat
 
-Use the published artifacts from [GitHub Releases](https://github.com/jtalweezy/mini-mad-cat/releases). Choose **x64** for a 64-bit Intel or AMD processor or **arm64** for Apple silicon, Windows on Arm, or a 64-bit ARM Linux device. Native packages include the companion, the artwork, and the local bridge runtime.
+Download signed native packages from [GitHub Releases](https://github.com/jtalweezy/mini-mad-cat/releases) when available. Choose **x64** for a 64-bit Intel or AMD processor or **arm64** for Apple silicon, Windows on Arm, or a 64-bit ARM Linux device. Native packages include the companion, the artwork, and the local bridge runtime.
 
 | Platform | Native package | How to start |
 | --- | --- | --- |
 | Windows | Setup .exe | Verify the publisher signature and install for your user. Open **Mini Mad Cat** from the Start menu. |
-| macOS 13+ | .dmg, with a .zip alternative | Drag the app to **Applications**, then open that copy. Open an extracted .app from a permanent location when using the ZIP. |
+| macOS 13.5+ | .dmg, with a .zip alternative | Drag the app to **Applications**, then open that copy. Open an extracted .app from a permanent location when using the ZIP. |
 | Debian or Ubuntu Linux | .deb | Use the system package installer, then open **Mini Mad Cat** from your applications menu. |
 | Other Linux desktops | .tar.gz | Extract it to a permanent folder and launch the included executable from that folder. |
 
@@ -25,8 +25,10 @@ The installer recognizes **Codex**, **Claude Desktop**, **Claude Code**, **Curso
 
 The full cursor-following experience uses X11 or a compatible XWayland session. Native Wayland limits global pointer tracking and app-controlled window movement. You can run the desktop executable with `--ozone-platform=x11` when XWayland is available. Reactions are delivered through the same local bridge. [Electron's Wayland notes](https://www.electronjs.org/blog/tech-talk-wayland)
 
+On Ubuntu, use the `.deb` if system policy blocks the portable app's Chromium sandbox. The Debian package supplies the upstream scoped AppArmor profile for the installed app path.
+
 ## Verify a download
 
-Check the download against the release's SHA-256 file. On Windows, you can inspect the **Digital Signatures** tab in the installer properties or run `Get-AuthenticodeSignature` in PowerShell. On macOS, the normal Gatekeeper check verifies the Developer ID and notarization. On Linux, verify the release checksum's detached OpenPGP signature with the project's independently confirmed signing key before using the checksum. [Apple notarization](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution) · [Windows signing and reputation](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation)
+Check the download against the release's SHA-256 file. On Windows, you can inspect the **Digital Signatures** tab in the installer properties or run `Get-AuthenticodeSignature` in PowerShell. On macOS, the normal Gatekeeper check verifies the Developer ID and notarization. On Linux, verify the package with its matching detached `.asc` signature and the project's independently confirmed OpenPGP key. [Apple notarization](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution) · [Windows signing and reputation](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation)
 
 Endpoint products apply the policies set by the organization. To investigate a suspected false positive, give the endpoint administrator the original release file's SHA-256, signer, and detection ID so they can verify the exact artifact.

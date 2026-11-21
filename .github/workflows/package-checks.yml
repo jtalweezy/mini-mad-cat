@@ -3,8 +3,12 @@ name: Native package checks
 on:
   pull_request:
   push:
-    branches: [main, 'native-*']
+    branches: [main]
   workflow_dispatch:
+
+concurrency:
+  group: native-package-checks-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
