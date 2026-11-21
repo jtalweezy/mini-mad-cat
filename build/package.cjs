@@ -197,6 +197,9 @@ function configuration(platform, architecture, signed, electronArchive, nodeRunt
       runAfterFinish: true
     },
     win: { signAndEditExecutable: true },
+    deb: {
+      fpm: ['-d', 'libasound2t64 | libasound2']
+    },
     linux: {
       category: 'Utility',
       maintainer: 'Mini Mad Cat maintainers <34728823+jtalweezy@users.noreply.github.com>',
@@ -229,6 +232,8 @@ async function main() {
   }
   if (app.devDependencies.electron !== pins.electron.version) throw new Error('The Electron package and upstream runtime pins disagree.');
   signInputs(platform, values.signed);
+  // Debian installs generated desktop files and icons as root for all users.
+  if (platform === 'linux') process.umask(0o022);
   if (!values.signed) {
     process.env.CSC_IDENTITY_AUTO_DISCOVERY = 'false';
     for (const key of ['CSC_LINK', 'CSC_KEY_PASSWORD', 'WIN_CSC_LINK', 'WIN_CSC_KEY_PASSWORD']) delete process.env[key];
